@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Dungeon com múltiplos estágios para Kamaloka.
+  O teleporte inicial é controlado pelo script, por isso teleport="false" no primeiro estágio.
+-->
+<dungeon id="1" name="Kamaloka" type="party" sharedInstance="false">
+    <cooldown minutes="0"/> <!-- O cooldown é controlado pelo script Java -->
+
+    <!-- Estágio 1 -->
+    <stage order="1" loc="86708,257918,-11671" teleport="false" minutes="30">
+        <spawns>
+            <spawn npcId="55021" title="[Kamaloka Boss]" count="1" range="0" loc="86951,258458,-11672,2412" />
+        </spawns>
+    </stage>
+    
+    <!-- Adicione mais estágios aqui se desejar, como no seu exemplo anterior -->
+    <!-- 
+    <stage order="2" loc="112804,-76675,8" teleport="true" minutes="10">
+        <spawns>
+            <spawn npcId="55000" count="2" ... />
+        </spawns>
+    </stage>
+    -->
+</dungeon>
