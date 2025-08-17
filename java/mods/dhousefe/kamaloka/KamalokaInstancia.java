@@ -67,8 +67,8 @@ public final class KamalokaInstancia implements L2JExtension, OnBypassCommandLis
     private static final String BYPASS_PREFIX = "kamaloka_";
 
     // --- ID da Dungeon no XML ---
-    private static final int KAMALOKA_SOLO_DUNGEON_ID = 1; // ID da sua dungeon "Heretic HexTec"
-    private static final int KAMALOKA_PARTY_DUNGEON_ID = 2; // ID da sua dungeon "Team Trial"
+    private static final int KAMALOKA_SOLO_DUNGEON_ID = 10; // ID da sua dungeon "Heretic HexTec"
+    private static final int KAMALOKA_PARTY_DUNGEON_ID = 11; // ID da sua dungeon "Team Trial"
 
     // --- Configurações da Instância ---
     private static final int INSTANCE_COOLDOWN_MINUTES = 320;
@@ -192,12 +192,23 @@ public final class KamalokaInstancia implements L2JExtension, OnBypassCommandLis
     }
 
     
-    @Override // onInteract is not part of L2JExtension or OnBypassCommandListener, so it should not be an override.
+    /*@Override 
     public boolean onInteract(Npc npc, Player player) {
-        if (npc.getNpcId() != NPC_ID) return false;
+        if (npc.getNpcId() != NPC_ID) return true;
         showHtml(player, "322.htm");
-        return true;
-    }
+        return false;
+    }*/
+
+    @Override
+	public boolean onInteract(Npc npc, Player player)
+	{
+		if (npc.getNpcId() == 55020)
+		{
+			showHtml(player, "322.htm");
+		}
+		
+		return false;
+	}
 
     @Override
     public boolean onBypass(Player player, String command) {
@@ -293,20 +304,37 @@ public final class KamalokaInstancia implements L2JExtension, OnBypassCommandLis
         return sdf.format(new Date(timestamp)).equals(sdf.format(new Date()));
     }
 
-    private void handleLeaveInstance(Player player) {
+    /*private void handleLeaveInstance(Player player) {
         if (player.getDungeon() instanceof KamalokaDungeon) {
             
-            Dungeon dungeon = new Dungeon(null, null);
-            dungeon.cancelDungeon();
+            
             player.setIsImmobilized(false);
             teleportPlayer(player, TELEPORT_EXIT_LOC, "Você saiu de Kamaloka.", 1);
             player.broadcastCharInfo();
             player.broadcastUserInfo();
             player.setDungeon((Dungeon)null);
             player.setInstanceMap(InstanceManager.getInstance().getInstance(0), true);
-            DungeonManager.getInstance().removeDungeon(this);
-            KamalokaInstancia.getInstance().onDungeonFinish(this);
             
+            
+        } else {
+            player.sendMessage("Você não está em Kamaloka.");
+        }
+    }*/
+
+
+    private void handleLeaveInstance(Player player) {
+        Dungeon dungeon = player.getDungeon();
+        if (dungeon instanceof KamalokaDungeon) {
+            // Converte para o nosso tipo de dungeon
+            KamalokaDungeon kamaloka = (KamalokaDungeon) dungeon;
+            // Chama o método de cancelamento que fará toda a limpeza e teleportará todos os jogadores para fora.
+            kamaloka.cancelDungeon("A instância foi encerrada por um jogador.");
+            player.setIsImmobilized(false);
+            teleportPlayer(player, TELEPORT_EXIT_LOC, "Você saiu de Kamaloka.", 1);
+            player.setDungeon((Dungeon)null);
+            player.setInstanceMap(InstanceManager.getInstance().getInstance(0), true);
+            player.broadcastCharInfo();
+            player.broadcastUserInfo();
         } else {
             player.sendMessage("Você não está em Kamaloka.");
         }
@@ -386,22 +414,19 @@ public final class KamalokaInstancia implements L2JExtension, OnBypassCommandLis
     /**
      * Classe interna que representa a instância Kamaloka, herdando de Dungeon.
      */
-    private static class KamalokaDungeon extends Dungeon {
-        private final AtomicReference<ScheduledFuture<?>> _bossDespawnTask = new AtomicReference<>();
-        private final AtomicReference<ScheduledFuture<?>> _warningTask = new AtomicReference<>();
-        private final AtomicInteger _remainingSeconds = new AtomicInteger(0);
-        private final MapInstance _instance;
-        private Npc _boss;
+    private class KamalokaDungeon extends Dungeon {
+        //private final MapInstance _instance;
         private final int _instanceId = INSTANCE_NAME.hashCode() ^ System.identityHashCode(this);
-        
+
         public KamalokaDungeon(DungeonTemplate template, List<Player> players) {
             super(template, players); // Agora usa o template carregado do XML
-            _instance = InstanceManager.getInstance().createInstance();
+            //_instance = InstanceManager.getInstance().createInstance();
             // A lógica de startDungeon() da classe pai (Dungeon) será chamada automaticamente.
-            // Ela vai ler os stages do XML e fazer o spawn.
         }
 
-        private void startDungeon() {
+        
+
+        /*private void startDungeon() {
             try (ExecutorService playerExecutor = Executors.newVirtualThreadPerTaskExecutor()) {
                 List<CompletableFuture<Void>> futures = getPlayers().stream()
                     .map(player -> CompletableFuture.runAsync(() -> {
@@ -417,13 +442,13 @@ public final class KamalokaInstancia implements L2JExtension, OnBypassCommandLis
                     KamalokaInstancia.getInstance()._executor.schedule(this::spawnBoss, 5, TimeUnit.SECONDS);
                 });
             }
-        }
+        }*/
 
         protected void beginTeleport() {
             // Sobrescreve o método para evitar que a lógica da classe pai (que depende do template) seja executada.
         }
 
-        private void spawnBoss() {
+        /*private void spawnBoss() {
             try {
                 if (_instance == null) {
                     LOGGER.error("[KamalokaDungeon] Não foi possível obter a MapInstance da Dungeon.");
@@ -451,7 +476,7 @@ public final class KamalokaInstancia implements L2JExtension, OnBypassCommandLis
                 LOGGER.error("[KamalokaDungeon] Falha ao spawnar o boss.", e);
                 cleanupDungeon(true);
             }
-        }
+        }*/
 
         
         public void onBossKill(Player killer) {
@@ -480,9 +505,11 @@ public final class KamalokaInstancia implements L2JExtension, OnBypassCommandLis
             player.addItem(REWARD_ITEM_ID, REWARD_ITEM_COUNT, true);
         }
 
+        
         private void cleanupDungeon(boolean failed) {
             if (failed) {
                 broadcastToDungeon("A incursão em Kamaloka falhou.");
+                cancelDungeon();
             }
 
             getPlayers().forEach(p -> {
@@ -494,28 +521,31 @@ public final class KamalokaInstancia implements L2JExtension, OnBypassCommandLis
                 }
             });
 
-            if (_boss != null && !_boss.isDead()) {
+            /*if (_boss != null && !_boss.isDead()) {
                 _boss.deleteMe();
             }
 
             cancelFuture(_bossDespawnTask);
-            cancelFuture(_warningTask);
+            cancelFuture(_warningTask);*/
             
-            if (_instance != null) {
+            /*if (_instance != null) {
                 InstanceManager.getInstance().deleteInstance(_instance.getId());
-            }
+            }*/
 
             DungeonManager.getInstance().removeDungeon(this);
             KamalokaInstancia.getInstance().onDungeonFinish(this);
+
+            cancelDungeon();
+            
         }
 
-        private void warnTimeLeft() {
+        /*private void warnTimeLeft() {
             int secondsLeft = _remainingSeconds.addAndGet(-60);
             if (secondsLeft > 0) {
                 int minutesLeft = secondsLeft / 60;
                 broadcastToDungeon("Tempo restante para derrotar o chefe: " + minutesLeft + " minuto(s).");
             }
-        }
+        }*/
 
         public int getInstanceId() {
             return _instanceId;
@@ -524,7 +554,7 @@ public final class KamalokaInstancia implements L2JExtension, OnBypassCommandLis
         private void broadcastToDungeon(String message) {
             getPlayers().forEach(p -> {
                 if (p != null && p.isOnline()) {
-                    p.sendPacket(new CreatureSay(0, SayType.ANNOUNCEMENT, "Kamaloka", message));
+                    p.sendPacket(new CreatureSay(0, SayType.TELL, "Kamaloka", message));
                 }
             });
         }
