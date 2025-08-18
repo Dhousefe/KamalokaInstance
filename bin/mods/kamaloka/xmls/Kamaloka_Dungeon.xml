@@ -1,50 +1,580 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <list>
-<!--
-  Dungeon com múltiplos estágios para Kamaloka.
-  O teleporte inicial é controlado pelo script, por isso teleport="false" no primeiro estágio.
--->
-    <dungeon id="10" name="Kamaloka Solo" type="solo" sharedInstance="false">
+	<!-- MODO PARTY: Labyrinth of the Abyss -->
+	<dungeon id="9" name="Labyrinth of the Abyss" type="party" sharedInstance="false">
 		<cooldown minutes="30"/>
 		
 		<stage order="1" loc="-76433,-185540,-11000" teleport="true" minutes="10"/>
 		<spawns stage="1">
-			<spawn npcId="55000" title="[Kamaloka Monster]" count="1" range="75" loc="-77348,-185845,-10992" drops="4037-1-1-500000;" />
-			<spawn npcId="55001" title="[Kamaloka Monster]" count="1" range="75" loc="-77562,-186061,-10992" drops="4037-1-1-500000;" />
-			<spawn npcId="55002" title="[Kamaloka Monster]" count="1" range="75" loc="-77984,-186057,-10992" drops="4037-1-1-500000;" />
-			<spawn npcId="55003" title="[Kamaloka Monster]" count="1" range="75" loc="-78198,-185844,-10992" drops="4037-1-1-500000;" />
-			<spawn npcId="55004" title="[Kamaloka Monster]" count="1" range="75" loc="-78201,-185175,-10992" drops="4037-1-1-500000;" />
-			<spawn npcId="55005" title="[Kamaloka Monster]" count="1" range="75" loc="-77994,-184962,-10992" drops="4037-1-1-500000;" />
-			<spawn npcId="55006" title="[Kamaloka Monster]" count="1" range="75" loc="-77565,-184960,-10992" drops="4037-1-1-500000;" />
-			<spawn npcId="55007" title="[Kamaloka Monster]" count="1" range="75" loc="-77349,-185173,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="20401" title="[Kamaloka Monster]" count="1" range="100" loc="-77348,-185845,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="20402" title="[Kamaloka Monster]" count="1" range="100" loc="-77562,-186061,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="20079" title="[Kamaloka Monster]" count="1" range="75" loc="-77984,-186057,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="20086" title="[Kamaloka Monster]" count="1" range="75" loc="-78198,-185844,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="21166" title="[Kamaloka Monster]" count="1" range="75" loc="-78201,-185175,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="21187" title="[Kamaloka Monster]" count="1" range="75" loc="-77994,-184962,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="20058" title="[Kamaloka Monster]" count="1" range="75" loc="-77565,-184960,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="20547" title="[Kamaloka Monster]" count="1" range="75" loc="-77349,-185173,-10992" drops="4037-1-1-500000;" />
 		</spawns>
 		
-		<stage order="2" loc="-80102,-185541,-10744" teleport="true" minutes="10"/>
+		<stage order="2" loc="-80102,-185541,-10744" teleport="false" minutes="10"/>
 		<spawns stage="2">
-			<spawn npcId="55000" title="[Kamaloka Monster]" count="2" range="75" loc="-80536,-185176,-10728" drops="4037-1-1-500000;" />
-			<spawn npcId="55001" title="[Kamaloka Monster]" count="2" range="75" loc="-80323,-184963,-10728" drops="4037-1-1-500000;" />
-			<spawn npcId="55002" title="[Kamaloka Monster]" count="2" range="75" loc="-79903,-184959,-10728" drops="4037-1-1-500000;" />
-			<spawn npcId="55003" title="[Kamaloka Monster]" count="2" range="75" loc="-79688,-185168,-10728" drops="4037-1-1-500000;" />
-			<spawn npcId="55004" title="[Kamaloka Monster]" count="2" range="75" loc="-79678,-185842,-10728" drops="4037-1-1-500000;" />
-			<spawn npcId="55005" title="[Kamaloka Monster]" count="2" range="75" loc="-79892,-186056,-10728" drops="4037-1-1-500000;" />
-			<spawn npcId="55006" title="[Kamaloka Monster]" count="2" range="75" loc="-80320,-186058,-10728" drops="4037-1-1-500000;" />
-			<spawn npcId="55007" title="[Kamaloka Monster]" count="2" range="75" loc="-80530,-185848,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="20401" title="[Kamaloka Monster]" count="2" range="75" loc="-80536,-185176,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="20402" title="[Kamaloka Monster]" count="2" range="75" loc="-80323,-184963,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="20079" title="[Kamaloka Monster]" count="2" range="75" loc="-79903,-184959,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="20086" title="[Kamaloka Monster]" count="2" range="75" loc="-79688,-185168,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="21166" title="[Kamaloka Monster]" count="2" range="75" loc="-79678,-185842,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="21187" title="[Kamaloka Monster]" count="2" range="75" loc="-79892,-186056,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="20058" title="[Kamaloka Monster]" count="2" range="75" loc="-80320,-186058,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="20547" title="[Kamaloka Monster]" count="2" range="75" loc="-80530,-185848,-10728" drops="4037-1-1-500000;" />
 		</spawns>
-		<stage order="3" loc="-82440,-185543,-10480" teleport="true" minutes="15"/>
+		<stage order="3" loc="-82440,-185543,-10480" teleport="false" minutes="15"/>
 		<spawns stage="3">
-			<spawn npcId="55000" title="[Kamaloka Monster]" count="3" range="75" loc="-82865,-185173,-10464" drops="4037-1-1-500000;" />
-			<spawn npcId="55001" title="[Kamaloka Monster]" count="3" range="75" loc="-82658,-184962,-10464" drops="4037-1-1-500000;" />
-			<spawn npcId="55002" title="[Kamaloka Monster]" count="3" range="75" loc="-82233,-184957,-10464" drops="4037-1-1-500000;" />
-			<spawn npcId="55003" title="[Kamaloka Monster]" count="3" range="75" loc="-82019,-185168,-10464" drops="4037-1-1-500000;" />
-			<spawn npcId="55004" title="[Kamaloka Monster]" count="3" range="75" loc="-82017,-185846,-10464" drops="4037-1-1-500000;" />
-			<spawn npcId="55005" title="[Kamaloka Monster]" count="3" range="75" loc="-82226,-186054,-10464" drops="4037-1-1-500000;" />
-			<spawn npcId="55006" title="[Kamaloka Monster]" count="3" range="75" loc="-82648,-186055,-10464" drops="4037-1-1-500000;" />
-			<spawn npcId="55007" title="[Kamaloka Monster]" count="3" range="75" loc="-82867,-185844,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="20401" title="[Kamaloka Monster]" count="3" range="75" loc="-82865,-185173,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="20402" title="[Kamaloka Monster]" count="3" range="75" loc="-82658,-184962,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="20079" title="[Kamaloka Monster]" count="3" range="75" loc="-82233,-184957,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="20086" title="[Kamaloka Monster]" count="3" range="75" loc="-82019,-185168,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="21166" title="[Kamaloka Monster]" count="3" range="75" loc="-82017,-185846,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="21187" title="[Kamaloka Monster]" count="3" range="75" loc="-82226,-186054,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="20058" title="[Kamaloka Monster]" count="3" range="75" loc="-82648,-186055,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="20547" title="[Kamaloka Monster]" count="3" range="75" loc="-82867,-185844,-10464" drops="4037-1-1-500000;" />
 		</spawns>
-		<stage order="4" loc="-85320,-185541,-10032" teleport="true" minutes="15"/>
+		<stage order="4" loc="-85320,-185541,-10032" teleport="false" minutes="15"/>
 		<spawns stage="4">
 			<spawn npcId="55010" title="[Kamaloka Raid]" count="1" range="75" loc="-86217,-185544,-10040" drops="4037-1-1-500000;" />
 		</spawns>
+	</dungeon>
+
+	<!-- =============================================================================== -->
+	<!-- MODO SOLO: Hall of the Abyss - POR NÍVEL                                        -->
+	<!-- =============================================================================== -->
+
+	<!-- Níveis 20-24 -->
+	<dungeon id="10" name="Hall of the Abyss (20-24)" type="solo" sharedInstance="false">
+		<cooldown minutes="30"/>
 		
+		<stage order="1" loc="-76433,-185540,-11000" teleport="true" minutes="10"/>
+		<spawns stage="1">
+			<spawn npcId="20401" title="[Kamaloka Monster]" count="1" range="100" loc="-77348,-185845,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="20402" title="[Kamaloka Monster]" count="1" range="100" loc="-77562,-186061,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="20079" title="[Kamaloka Monster]" count="1" range="75" loc="-77984,-186057,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="20086" title="[Kamaloka Monster]" count="1" range="75" loc="-78198,-185844,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="21166" title="[Kamaloka Monster]" count="1" range="75" loc="-78201,-185175,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="21187" title="[Kamaloka Monster]" count="1" range="75" loc="-77994,-184962,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="20058" title="[Kamaloka Monster]" count="1" range="75" loc="-77565,-184960,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="20547" title="[Kamaloka Monster]" count="1" range="75" loc="-77349,-185173,-10992" drops="4037-1-1-500000;" />
+		</spawns>
+		
+		<stage order="2" loc="-80102,-185541,-10744" teleport="false" minutes="10"/>
+		<spawns stage="2">
+			<spawn npcId="20401" title="[Kamaloka Monster]" count="2" range="75" loc="-80536,-185176,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="20402" title="[Kamaloka Monster]" count="2" range="75" loc="-80323,-184963,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="20079" title="[Kamaloka Monster]" count="2" range="75" loc="-79903,-184959,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="20086" title="[Kamaloka Monster]" count="2" range="75" loc="-79688,-185168,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="21166" title="[Kamaloka Monster]" count="2" range="75" loc="-79678,-185842,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="21187" title="[Kamaloka Monster]" count="2" range="75" loc="-79892,-186056,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="20058" title="[Kamaloka Monster]" count="2" range="75" loc="-80320,-186058,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="20547" title="[Kamaloka Monster]" count="2" range="75" loc="-80530,-185848,-10728" drops="4037-1-1-500000;" />
+		</spawns>
+		<stage order="3" loc="-82440,-185543,-10480" teleport="false" minutes="15"/>
+		<spawns stage="3">
+			<spawn npcId="20401" title="[Kamaloka Monster]" count="3" range="75" loc="-82865,-185173,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="20402" title="[Kamaloka Monster]" count="3" range="75" loc="-82658,-184962,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="20079" title="[Kamaloka Monster]" count="3" range="75" loc="-82233,-184957,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="20086" title="[Kamaloka Monster]" count="3" range="75" loc="-82019,-185168,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="21166" title="[Kamaloka Monster]" count="3" range="75" loc="-82017,-185846,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="21187" title="[Kamaloka Monster]" count="3" range="75" loc="-82226,-186054,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="20058" title="[Kamaloka Monster]" count="3" range="75" loc="-82648,-186055,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="20547" title="[Kamaloka Monster]" count="3" range="75" loc="-82867,-185844,-10464" drops="4037-1-1-500000;" />
+		</spawns>
+		<stage order="4" loc="-85320,-185541,-10032" teleport="false" minutes="15"/>
+		<spawns stage="4">
+			<spawn npcId="25149" title="[Kamaloka Raid]" count="1" range="75" loc="-86217,-185544,-10040" drops="4037-1-1-500000;" />
+		</spawns>
+	</dungeon>
+	
+	<!-- Níveis 25-29 -->
+	<dungeon id="11" name="Hall of the Abyss (25-29)" type="solo" sharedInstance="false">
+		<cooldown minutes="30"/>
+		
+		<stage order="1" loc="-76433,-185540,-11000" teleport="true" minutes="10"/>
+		<spawns stage="1">
+			<spawn npcId="20198" title="[Kamaloka Monster]" count="1" range="100" loc="-77348,-185845,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="20160" title="[Kamaloka Monster]" count="1" range="100" loc="-77562,-186061,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="20930" title="[Kamaloka Monster]" count="1" range="75" loc="-77984,-186057,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="20929" title="[Kamaloka Monster]" count="1" range="75" loc="-78198,-185844,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="20793" title="[Kamaloka Monster]" count="1" range="75" loc="-78201,-185175,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="20989" title="[Kamaloka Monster]" count="1" range="75" loc="-77994,-184962,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="20227" title="[Kamaloka Monster]" count="1" range="75" loc="-77565,-184960,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="20157" title="[Kamaloka Monster]" count="1" range="75" loc="-77349,-185173,-10992" drops="4037-1-1-500000;" />
+		</spawns>
+		
+		<stage order="2" loc="-80102,-185541,-10744" teleport="false" minutes="10"/>
+		<spawns stage="2">
+			<spawn npcId="20198" title="[Kamaloka Monster]" count="2" range="75" loc="-80536,-185176,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="20160" title="[Kamaloka Monster]" count="2" range="75" loc="-80323,-184963,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="20930" title="[Kamaloka Monster]" count="2" range="75" loc="-79903,-184959,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="20929" title="[Kamaloka Monster]" count="2" range="75" loc="-79688,-185168,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="20793" title="[Kamaloka Monster]" count="2" range="75" loc="-79678,-185842,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="20989" title="[Kamaloka Monster]" count="2" range="75" loc="-79892,-186056,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="20227" title="[Kamaloka Monster]" count="2" range="75" loc="-80320,-186058,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="20157" title="[Kamaloka Monster]" count="2" range="75" loc="-80530,-185848,-10728" drops="4037-1-1-500000;" />
+		</spawns>
+		<stage order="3" loc="-82440,-185543,-10480" teleport="false" minutes="15"/>
+		<spawns stage="3">
+			<spawn npcId="20198" title="[Kamaloka Monster]" count="3" range="75" loc="-82865,-185173,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="20160" title="[Kamaloka Monster]" count="3" range="75" loc="-82658,-184962,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="20930" title="[Kamaloka Monster]" count="3" range="75" loc="-82233,-184957,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="20929" title="[Kamaloka Monster]" count="3" range="75" loc="-82019,-185168,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="20793" title="[Kamaloka Monster]" count="3" range="75" loc="-82017,-185846,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="20989" title="[Kamaloka Monster]" count="3" range="75" loc="-82226,-186054,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="20227" title="[Kamaloka Monster]" count="3" range="75" loc="-82648,-186055,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="20157" title="[Kamaloka Monster]" count="3" range="75" loc="-82867,-185844,-10464" drops="4037-1-1-500000;" />
+		</spawns>
+		<stage order="4" loc="-85320,-185541,-10032" teleport="false" minutes="15"/>
+		<spawns stage="4">
+			<spawn npcId="25041" title="[Kamaloka Raid]" count="1" range="75" loc="-86217,-185544,-10040" drops="4037-1-1-500000;" />
+		</spawns>
+	</dungeon>
+
+	<!-- Níveis 30-34 -->
+	<dungeon id="12" name="Hall of the Abyss (30-34)" type="solo" sharedInstance="false">
+		<cooldown minutes="30"/>
+		
+		<stage order="1" loc="-76433,-185540,-11000" teleport="true" minutes="10"/>
+		<spawns stage="1">
+			<spawn npcId="20401" title="[Kamaloka Monster]" count="1" range="100" loc="-77348,-185845,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="20402" title="[Kamaloka Monster]" count="1" range="100" loc="-77562,-186061,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="20079" title="[Kamaloka Monster]" count="1" range="75" loc="-77984,-186057,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="20086" title="[Kamaloka Monster]" count="1" range="75" loc="-78198,-185844,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="21166" title="[Kamaloka Monster]" count="1" range="75" loc="-78201,-185175,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="21187" title="[Kamaloka Monster]" count="1" range="75" loc="-77994,-184962,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="20058" title="[Kamaloka Monster]" count="1" range="75" loc="-77565,-184960,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="20547" title="[Kamaloka Monster]" count="1" range="75" loc="-77349,-185173,-10992" drops="4037-1-1-500000;" />
+		</spawns>
+		
+		<stage order="2" loc="-80102,-185541,-10744" teleport="false" minutes="10"/>
+		<spawns stage="2">
+			<spawn npcId="20401" title="[Kamaloka Monster]" count="2" range="75" loc="-80536,-185176,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="20402" title="[Kamaloka Monster]" count="2" range="75" loc="-80323,-184963,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="20079" title="[Kamaloka Monster]" count="2" range="75" loc="-79903,-184959,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="20086" title="[Kamaloka Monster]" count="2" range="75" loc="-79688,-185168,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="21166" title="[Kamaloka Monster]" count="2" range="75" loc="-79678,-185842,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="21187" title="[Kamaloka Monster]" count="2" range="75" loc="-79892,-186056,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="20058" title="[Kamaloka Monster]" count="2" range="75" loc="-80320,-186058,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="20547" title="[Kamaloka Monster]" count="2" range="75" loc="-80530,-185848,-10728" drops="4037-1-1-500000;" />
+		</spawns>
+		<stage order="3" loc="-82440,-185543,-10480" teleport="false" minutes="15"/>
+		<spawns stage="3">
+			<spawn npcId="20401" title="[Kamaloka Monster]" count="3" range="75" loc="-82865,-185173,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="20402" title="[Kamaloka Monster]" count="3" range="75" loc="-82658,-184962,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="20079" title="[Kamaloka Monster]" count="3" range="75" loc="-82233,-184957,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="20086" title="[Kamaloka Monster]" count="3" range="75" loc="-82019,-185168,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="21166" title="[Kamaloka Monster]" count="3" range="75" loc="-82017,-185846,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="21187" title="[Kamaloka Monster]" count="3" range="75" loc="-82226,-186054,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="20058" title="[Kamaloka Monster]" count="3" range="75" loc="-82648,-186055,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="20547" title="[Kamaloka Monster]" count="3" range="75" loc="-82867,-185844,-10464" drops="4037-1-1-500000;" />
+		</spawns>
+		<stage order="4" loc="-85320,-185541,-10032" teleport="false" minutes="15"/>
+		<spawns stage="4">
+			<spawn npcId="55010" title="[Kamaloka Raid]" count="1" range="75" loc="-86217,-185544,-10040" drops="4037-1-1-500000;" />
+		</spawns>
+	</dungeon>
+
+	<!-- Níveis 35-39 -->
+	<dungeon id="13" name="Hall of the Abyss (35-39)" type="solo" sharedInstance="false">
+		<cooldown minutes="30"/>
+		
+		<stage order="1" loc="-76433,-185540,-11000" teleport="true" minutes="10"/>
+		<spawns stage="1">
+			<spawn npcId="20401" title="[Kamaloka Monster]" count="1" range="100" loc="-77348,-185845,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="20402" title="[Kamaloka Monster]" count="1" range="100" loc="-77562,-186061,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="20079" title="[Kamaloka Monster]" count="1" range="75" loc="-77984,-186057,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="20086" title="[Kamaloka Monster]" count="1" range="75" loc="-78198,-185844,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="21166" title="[Kamaloka Monster]" count="1" range="75" loc="-78201,-185175,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="21187" title="[Kamaloka Monster]" count="1" range="75" loc="-77994,-184962,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="20058" title="[Kamaloka Monster]" count="1" range="75" loc="-77565,-184960,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="20547" title="[Kamaloka Monster]" count="1" range="75" loc="-77349,-185173,-10992" drops="4037-1-1-500000;" />
+		</spawns>
+		
+		<stage order="2" loc="-80102,-185541,-10744" teleport="false" minutes="10"/>
+		<spawns stage="2">
+			<spawn npcId="20401" title="[Kamaloka Monster]" count="2" range="75" loc="-80536,-185176,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="20402" title="[Kamaloka Monster]" count="2" range="75" loc="-80323,-184963,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="20079" title="[Kamaloka Monster]" count="2" range="75" loc="-79903,-184959,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="20086" title="[Kamaloka Monster]" count="2" range="75" loc="-79688,-185168,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="21166" title="[Kamaloka Monster]" count="2" range="75" loc="-79678,-185842,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="21187" title="[Kamaloka Monster]" count="2" range="75" loc="-79892,-186056,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="20058" title="[Kamaloka Monster]" count="2" range="75" loc="-80320,-186058,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="20547" title="[Kamaloka Monster]" count="2" range="75" loc="-80530,-185848,-10728" drops="4037-1-1-500000;" />
+		</spawns>
+		<stage order="3" loc="-82440,-185543,-10480" teleport="false" minutes="15"/>
+		<spawns stage="3">
+			<spawn npcId="20401" title="[Kamaloka Monster]" count="3" range="75" loc="-82865,-185173,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="20402" title="[Kamaloka Monster]" count="3" range="75" loc="-82658,-184962,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="20079" title="[Kamaloka Monster]" count="3" range="75" loc="-82233,-184957,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="20086" title="[Kamaloka Monster]" count="3" range="75" loc="-82019,-185168,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="21166" title="[Kamaloka Monster]" count="3" range="75" loc="-82017,-185846,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="21187" title="[Kamaloka Monster]" count="3" range="75" loc="-82226,-186054,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="20058" title="[Kamaloka Monster]" count="3" range="75" loc="-82648,-186055,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="20547" title="[Kamaloka Monster]" count="3" range="75" loc="-82867,-185844,-10464" drops="4037-1-1-500000;" />
+		</spawns>
+		<stage order="4" loc="-85320,-185541,-10032" teleport="false" minutes="15"/>
+		<spawns stage="4">
+			<spawn npcId="55010" title="[Kamaloka Raid]" count="1" range="75" loc="-86217,-185544,-10040" drops="4037-1-1-500000;" />
+		</spawns>
+	</dungeon>
+
+	<!-- Níveis 40-44 -->
+	<dungeon id="14" name="Hall of the Abyss (40-44)" type="solo" sharedInstance="false">
+		<cooldown minutes="30"/>
+		
+		<stage order="1" loc="-76433,-185540,-11000" teleport="true" minutes="10"/>
+		<spawns stage="1">
+			<spawn npcId="20401" title="[Kamaloka Monster]" count="1" range="100" loc="-77348,-185845,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="20402" title="[Kamaloka Monster]" count="1" range="100" loc="-77562,-186061,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="20079" title="[Kamaloka Monster]" count="1" range="75" loc="-77984,-186057,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="20086" title="[Kamaloka Monster]" count="1" range="75" loc="-78198,-185844,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="21166" title="[Kamaloka Monster]" count="1" range="75" loc="-78201,-185175,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="21187" title="[Kamaloka Monster]" count="1" range="75" loc="-77994,-184962,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="20058" title="[Kamaloka Monster]" count="1" range="75" loc="-77565,-184960,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="20547" title="[Kamaloka Monster]" count="1" range="75" loc="-77349,-185173,-10992" drops="4037-1-1-500000;" />
+		</spawns>
+		
+		<stage order="2" loc="-80102,-185541,-10744" teleport="false" minutes="10"/>
+		<spawns stage="2">
+			<spawn npcId="20401" title="[Kamaloka Monster]" count="2" range="75" loc="-80536,-185176,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="20402" title="[Kamaloka Monster]" count="2" range="75" loc="-80323,-184963,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="20079" title="[Kamaloka Monster]" count="2" range="75" loc="-79903,-184959,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="20086" title="[Kamaloka Monster]" count="2" range="75" loc="-79688,-185168,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="21166" title="[Kamaloka Monster]" count="2" range="75" loc="-79678,-185842,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="21187" title="[Kamaloka Monster]" count="2" range="75" loc="-79892,-186056,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="20058" title="[Kamaloka Monster]" count="2" range="75" loc="-80320,-186058,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="20547" title="[Kamaloka Monster]" count="2" range="75" loc="-80530,-185848,-10728" drops="4037-1-1-500000;" />
+		</spawns>
+		<stage order="3" loc="-82440,-185543,-10480" teleport="false" minutes="15"/>
+		<spawns stage="3">
+			<spawn npcId="20401" title="[Kamaloka Monster]" count="3" range="75" loc="-82865,-185173,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="20402" title="[Kamaloka Monster]" count="3" range="75" loc="-82658,-184962,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="20079" title="[Kamaloka Monster]" count="3" range="75" loc="-82233,-184957,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="20086" title="[Kamaloka Monster]" count="3" range="75" loc="-82019,-185168,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="21166" title="[Kamaloka Monster]" count="3" range="75" loc="-82017,-185846,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="21187" title="[Kamaloka Monster]" count="3" range="75" loc="-82226,-186054,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="20058" title="[Kamaloka Monster]" count="3" range="75" loc="-82648,-186055,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="20547" title="[Kamaloka Monster]" count="3" range="75" loc="-82867,-185844,-10464" drops="4037-1-1-500000;" />
+		</spawns>
+		<stage order="4" loc="-85320,-185541,-10032" teleport="false" minutes="15"/>
+		<spawns stage="4">
+			<spawn npcId="55010" title="[Kamaloka Raid]" count="1" range="75" loc="-86217,-185544,-10040" drops="4037-1-1-500000;" />
+		</spawns>
+	</dungeon>
+
+	<!-- Níveis 45-49 -->
+	<dungeon id="15" name="Hall of the Abyss (45-49)" type="solo" sharedInstance="false">
+		<cooldown minutes="30"/>
+		
+		<stage order="1" loc="-76433,-185540,-11000" teleport="true" minutes="10"/>
+		<spawns stage="1">
+			<spawn npcId="20401" title="[Kamaloka Monster]" count="1" range="100" loc="-77348,-185845,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="20402" title="[Kamaloka Monster]" count="1" range="100" loc="-77562,-186061,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="20079" title="[Kamaloka Monster]" count="1" range="75" loc="-77984,-186057,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="20086" title="[Kamaloka Monster]" count="1" range="75" loc="-78198,-185844,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="21166" title="[Kamaloka Monster]" count="1" range="75" loc="-78201,-185175,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="21187" title="[Kamaloka Monster]" count="1" range="75" loc="-77994,-184962,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="20058" title="[Kamaloka Monster]" count="1" range="75" loc="-77565,-184960,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="20547" title="[Kamaloka Monster]" count="1" range="75" loc="-77349,-185173,-10992" drops="4037-1-1-500000;" />
+		</spawns>
+		
+		<stage order="2" loc="-80102,-185541,-10744" teleport="false" minutes="10"/>
+		<spawns stage="2">
+			<spawn npcId="20401" title="[Kamaloka Monster]" count="2" range="75" loc="-80536,-185176,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="20402" title="[Kamaloka Monster]" count="2" range="75" loc="-80323,-184963,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="20079" title="[Kamaloka Monster]" count="2" range="75" loc="-79903,-184959,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="20086" title="[Kamaloka Monster]" count="2" range="75" loc="-79688,-185168,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="21166" title="[Kamaloka Monster]" count="2" range="75" loc="-79678,-185842,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="21187" title="[Kamaloka Monster]" count="2" range="75" loc="-79892,-186056,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="20058" title="[Kamaloka Monster]" count="2" range="75" loc="-80320,-186058,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="20547" title="[Kamaloka Monster]" count="2" range="75" loc="-80530,-185848,-10728" drops="4037-1-1-500000;" />
+		</spawns>
+		<stage order="3" loc="-82440,-185543,-10480" teleport="false" minutes="15"/>
+		<spawns stage="3">
+			<spawn npcId="20401" title="[Kamaloka Monster]" count="3" range="75" loc="-82865,-185173,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="20402" title="[Kamaloka Monster]" count="3" range="75" loc="-82658,-184962,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="20079" title="[Kamaloka Monster]" count="3" range="75" loc="-82233,-184957,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="20086" title="[Kamaloka Monster]" count="3" range="75" loc="-82019,-185168,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="21166" title="[Kamaloka Monster]" count="3" range="75" loc="-82017,-185846,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="21187" title="[Kamaloka Monster]" count="3" range="75" loc="-82226,-186054,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="20058" title="[Kamaloka Monster]" count="3" range="75" loc="-82648,-186055,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="20547" title="[Kamaloka Monster]" count="3" range="75" loc="-82867,-185844,-10464" drops="4037-1-1-500000;" />
+		</spawns>
+		<stage order="4" loc="-85320,-185541,-10032" teleport="false" minutes="15"/>
+		<spawns stage="4">
+			<spawn npcId="55010" title="[Kamaloka Raid]" count="1" range="75" loc="-86217,-185544,-10040" drops="4037-1-1-500000;" />
+		</spawns>
+	</dungeon>
+
+	<!-- Níveis 50-54 -->
+	<dungeon id="16" name="Hall of the Abyss (50-54)" type="solo" sharedInstance="false">
+		<cooldown minutes="30"/>
+		
+		<stage order="1" loc="-76433,-185540,-11000" teleport="true" minutes="10"/>
+		<spawns stage="1">
+			<spawn npcId="20401" title="[Kamaloka Monster]" count="1" range="100" loc="-77348,-185845,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="20402" title="[Kamaloka Monster]" count="1" range="100" loc="-77562,-186061,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="20079" title="[Kamaloka Monster]" count="1" range="75" loc="-77984,-186057,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="20086" title="[Kamaloka Monster]" count="1" range="75" loc="-78198,-185844,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="21166" title="[Kamaloka Monster]" count="1" range="75" loc="-78201,-185175,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="21187" title="[Kamaloka Monster]" count="1" range="75" loc="-77994,-184962,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="20058" title="[Kamaloka Monster]" count="1" range="75" loc="-77565,-184960,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="20547" title="[Kamaloka Monster]" count="1" range="75" loc="-77349,-185173,-10992" drops="4037-1-1-500000;" />
+		</spawns>
+		
+		<stage order="2" loc="-80102,-185541,-10744" teleport="false" minutes="10"/>
+		<spawns stage="2">
+			<spawn npcId="20401" title="[Kamaloka Monster]" count="2" range="75" loc="-80536,-185176,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="20402" title="[Kamaloka Monster]" count="2" range="75" loc="-80323,-184963,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="20079" title="[Kamaloka Monster]" count="2" range="75" loc="-79903,-184959,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="20086" title="[Kamaloka Monster]" count="2" range="75" loc="-79688,-185168,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="21166" title="[Kamaloka Monster]" count="2" range="75" loc="-79678,-185842,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="21187" title="[Kamaloka Monster]" count="2" range="75" loc="-79892,-186056,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="20058" title="[Kamaloka Monster]" count="2" range="75" loc="-80320,-186058,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="20547" title="[Kamaloka Monster]" count="2" range="75" loc="-80530,-185848,-10728" drops="4037-1-1-500000;" />
+		</spawns>
+		<stage order="3" loc="-82440,-185543,-10480" teleport="false" minutes="15"/>
+		<spawns stage="3">
+			<spawn npcId="20401" title="[Kamaloka Monster]" count="3" range="75" loc="-82865,-185173,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="20402" title="[Kamaloka Monster]" count="3" range="75" loc="-82658,-184962,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="20079" title="[Kamaloka Monster]" count="3" range="75" loc="-82233,-184957,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="20086" title="[Kamaloka Monster]" count="3" range="75" loc="-82019,-185168,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="21166" title="[Kamaloka Monster]" count="3" range="75" loc="-82017,-185846,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="21187" title="[Kamaloka Monster]" count="3" range="75" loc="-82226,-186054,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="20058" title="[Kamaloka Monster]" count="3" range="75" loc="-82648,-186055,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="20547" title="[Kamaloka Monster]" count="3" range="75" loc="-82867,-185844,-10464" drops="4037-1-1-500000;" />
+		</spawns>
+		<stage order="4" loc="-85320,-185541,-10032" teleport="false" minutes="15"/>
+		<spawns stage="4">
+			<spawn npcId="55010" title="[Kamaloka Raid]" count="1" range="75" loc="-86217,-185544,-10040" drops="4037-1-1-500000;" />
+		</spawns>
+	</dungeon>
+
+	<!-- Níveis 55-59 -->
+	<dungeon id="17" name="Hall of the Abyss (55-59)" type="solo" sharedInstance="false">
+		<cooldown minutes="30"/>
+		
+		<stage order="1" loc="-76433,-185540,-11000" teleport="true" minutes="10"/>
+		<spawns stage="1">
+			<spawn npcId="20401" title="[Kamaloka Monster]" count="1" range="100" loc="-77348,-185845,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="20402" title="[Kamaloka Monster]" count="1" range="100" loc="-77562,-186061,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="20079" title="[Kamaloka Monster]" count="1" range="75" loc="-77984,-186057,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="20086" title="[Kamaloka Monster]" count="1" range="75" loc="-78198,-185844,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="21166" title="[Kamaloka Monster]" count="1" range="75" loc="-78201,-185175,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="21187" title="[Kamaloka Monster]" count="1" range="75" loc="-77994,-184962,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="20058" title="[Kamaloka Monster]" count="1" range="75" loc="-77565,-184960,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="20547" title="[Kamaloka Monster]" count="1" range="75" loc="-77349,-185173,-10992" drops="4037-1-1-500000;" />
+		</spawns>
+		
+		<stage order="2" loc="-80102,-185541,-10744" teleport="false" minutes="10"/>
+		<spawns stage="2">
+			<spawn npcId="20401" title="[Kamaloka Monster]" count="2" range="75" loc="-80536,-185176,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="20402" title="[Kamaloka Monster]" count="2" range="75" loc="-80323,-184963,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="20079" title="[Kamaloka Monster]" count="2" range="75" loc="-79903,-184959,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="20086" title="[Kamaloka Monster]" count="2" range="75" loc="-79688,-185168,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="21166" title="[Kamaloka Monster]" count="2" range="75" loc="-79678,-185842,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="21187" title="[Kamaloka Monster]" count="2" range="75" loc="-79892,-186056,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="20058" title="[Kamaloka Monster]" count="2" range="75" loc="-80320,-186058,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="20547" title="[Kamaloka Monster]" count="2" range="75" loc="-80530,-185848,-10728" drops="4037-1-1-500000;" />
+		</spawns>
+		<stage order="3" loc="-82440,-185543,-10480" teleport="false" minutes="15"/>
+		<spawns stage="3">
+			<spawn npcId="20401" title="[Kamaloka Monster]" count="3" range="75" loc="-82865,-185173,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="20402" title="[Kamaloka Monster]" count="3" range="75" loc="-82658,-184962,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="20079" title="[Kamaloka Monster]" count="3" range="75" loc="-82233,-184957,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="20086" title="[Kamaloka Monster]" count="3" range="75" loc="-82019,-185168,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="21166" title="[Kamaloka Monster]" count="3" range="75" loc="-82017,-185846,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="21187" title="[Kamaloka Monster]" count="3" range="75" loc="-82226,-186054,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="20058" title="[Kamaloka Monster]" count="3" range="75" loc="-82648,-186055,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="20547" title="[Kamaloka Monster]" count="3" range="75" loc="-82867,-185844,-10464" drops="4037-1-1-500000;" />
+		</spawns>
+		<stage order="4" loc="-85320,-185541,-10032" teleport="false" minutes="15"/>
+		<spawns stage="4">
+			<spawn npcId="55010" title="[Kamaloka Raid]" count="1" range="75" loc="-86217,-185544,-10040" drops="4037-1-1-500000;" />
+		</spawns>
+	</dungeon>
+
+	<!-- Níveis 60-64 -->
+	<dungeon id="18" name="Hall of the Abyss (60-64)" type="solo" sharedInstance="false">
+		<cooldown minutes="30"/>
+		
+		<stage order="1" loc="-76433,-185540,-11000" teleport="true" minutes="10"/>
+		<spawns stage="1">
+			<spawn npcId="20401" title="[Kamaloka Monster]" count="1" range="100" loc="-77348,-185845,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="20402" title="[Kamaloka Monster]" count="1" range="100" loc="-77562,-186061,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="20079" title="[Kamaloka Monster]" count="1" range="75" loc="-77984,-186057,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="20086" title="[Kamaloka Monster]" count="1" range="75" loc="-78198,-185844,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="21166" title="[Kamaloka Monster]" count="1" range="75" loc="-78201,-185175,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="21187" title="[Kamaloka Monster]" count="1" range="75" loc="-77994,-184962,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="20058" title="[Kamaloka Monster]" count="1" range="75" loc="-77565,-184960,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="20547" title="[Kamaloka Monster]" count="1" range="75" loc="-77349,-185173,-10992" drops="4037-1-1-500000;" />
+		</spawns>
+		
+		<stage order="2" loc="-80102,-185541,-10744" teleport="false" minutes="10"/>
+		<spawns stage="2">
+			<spawn npcId="20401" title="[Kamaloka Monster]" count="2" range="75" loc="-80536,-185176,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="20402" title="[Kamaloka Monster]" count="2" range="75" loc="-80323,-184963,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="20079" title="[Kamaloka Monster]" count="2" range="75" loc="-79903,-184959,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="20086" title="[Kamaloka Monster]" count="2" range="75" loc="-79688,-185168,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="21166" title="[Kamaloka Monster]" count="2" range="75" loc="-79678,-185842,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="21187" title="[Kamaloka Monster]" count="2" range="75" loc="-79892,-186056,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="20058" title="[Kamaloka Monster]" count="2" range="75" loc="-80320,-186058,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="20547" title="[Kamaloka Monster]" count="2" range="75" loc="-80530,-185848,-10728" drops="4037-1-1-500000;" />
+		</spawns>
+		<stage order="3" loc="-82440,-185543,-10480" teleport="false" minutes="15"/>
+		<spawns stage="3">
+			<spawn npcId="20401" title="[Kamaloka Monster]" count="3" range="75" loc="-82865,-185173,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="20402" title="[Kamaloka Monster]" count="3" range="75" loc="-82658,-184962,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="20079" title="[Kamaloka Monster]" count="3" range="75" loc="-82233,-184957,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="20086" title="[Kamaloka Monster]" count="3" range="75" loc="-82019,-185168,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="21166" title="[Kamaloka Monster]" count="3" range="75" loc="-82017,-185846,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="21187" title="[Kamaloka Monster]" count="3" range="75" loc="-82226,-186054,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="20058" title="[Kamaloka Monster]" count="3" range="75" loc="-82648,-186055,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="20547" title="[Kamaloka Monster]" count="3" range="75" loc="-82867,-185844,-10464" drops="4037-1-1-500000;" />
+		</spawns>
+		<stage order="4" loc="-85320,-185541,-10032" teleport="false" minutes="15"/>
+		<spawns stage="4">
+			<spawn npcId="55010" title="[Kamaloka Raid]" count="1" range="75" loc="-86217,-185544,-10040" drops="4037-1-1-500000;" />
+		</spawns>
+	</dungeon>
+
+	<!-- Níveis 65-69 -->
+	<dungeon id="19" name="Hall of the Abyss (65-69)" type="solo" sharedInstance="false">
+		<cooldown minutes="30"/>
+		
+		<stage order="1" loc="-76433,-185540,-11000" teleport="true" minutes="10"/>
+		<spawns stage="1">
+			<spawn npcId="20401" title="[Kamaloka Monster]" count="1" range="100" loc="-77348,-185845,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="20402" title="[Kamaloka Monster]" count="1" range="100" loc="-77562,-186061,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="20079" title="[Kamaloka Monster]" count="1" range="75" loc="-77984,-186057,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="20086" title="[Kamaloka Monster]" count="1" range="75" loc="-78198,-185844,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="21166" title="[Kamaloka Monster]" count="1" range="75" loc="-78201,-185175,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="21187" title="[Kamaloka Monster]" count="1" range="75" loc="-77994,-184962,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="20058" title="[Kamaloka Monster]" count="1" range="75" loc="-77565,-184960,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="20547" title="[Kamaloka Monster]" count="1" range="75" loc="-77349,-185173,-10992" drops="4037-1-1-500000;" />
+		</spawns>
+		
+		<stage order="2" loc="-80102,-185541,-10744" teleport="false" minutes="10"/>
+		<spawns stage="2">
+			<spawn npcId="20401" title="[Kamaloka Monster]" count="2" range="75" loc="-80536,-185176,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="20402" title="[Kamaloka Monster]" count="2" range="75" loc="-80323,-184963,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="20079" title="[Kamaloka Monster]" count="2" range="75" loc="-79903,-184959,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="20086" title="[Kamaloka Monster]" count="2" range="75" loc="-79688,-185168,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="21166" title="[Kamaloka Monster]" count="2" range="75" loc="-79678,-185842,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="21187" title="[Kamaloka Monster]" count="2" range="75" loc="-79892,-186056,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="20058" title="[Kamaloka Monster]" count="2" range="75" loc="-80320,-186058,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="20547" title="[Kamaloka Monster]" count="2" range="75" loc="-80530,-185848,-10728" drops="4037-1-1-500000;" />
+		</spawns>
+		<stage order="3" loc="-82440,-185543,-10480" teleport="false" minutes="15"/>
+		<spawns stage="3">
+			<spawn npcId="20401" title="[Kamaloka Monster]" count="3" range="75" loc="-82865,-185173,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="20402" title="[Kamaloka Monster]" count="3" range="75" loc="-82658,-184962,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="20079" title="[Kamaloka Monster]" count="3" range="75" loc="-82233,-184957,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="20086" title="[Kamaloka Monster]" count="3" range="75" loc="-82019,-185168,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="21166" title="[Kamaloka Monster]" count="3" range="75" loc="-82017,-185846,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="21187" title="[Kamaloka Monster]" count="3" range="75" loc="-82226,-186054,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="20058" title="[Kamaloka Monster]" count="3" range="75" loc="-82648,-186055,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="20547" title="[Kamaloka Monster]" count="3" range="75" loc="-82867,-185844,-10464" drops="4037-1-1-500000;" />
+		</spawns>
+		<stage order="4" loc="-85320,-185541,-10032" teleport="false" minutes="15"/>
+		<spawns stage="4">
+			<spawn npcId="55010" title="[Kamaloka Raid]" count="1" range="75" loc="-86217,-185544,-10040" drops="4037-1-1-500000;" />
+		</spawns>
+	</dungeon>
+
+	<!-- Níveis 70-74 -->
+	<dungeon id="20" name="Hall of the Abyss (70-74)" type="solo" sharedInstance="false">
+		<cooldown minutes="30"/>
+		
+		<stage order="1" loc="-76433,-185540,-11000" teleport="true" minutes="10"/>
+		<spawns stage="1">
+			<spawn npcId="20401" title="[Kamaloka Monster]" count="1" range="100" loc="-77348,-185845,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="20402" title="[Kamaloka Monster]" count="1" range="100" loc="-77562,-186061,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="20079" title="[Kamaloka Monster]" count="1" range="75" loc="-77984,-186057,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="20086" title="[Kamaloka Monster]" count="1" range="75" loc="-78198,-185844,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="21166" title="[Kamaloka Monster]" count="1" range="75" loc="-78201,-185175,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="21187" title="[Kamaloka Monster]" count="1" range="75" loc="-77994,-184962,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="20058" title="[Kamaloka Monster]" count="1" range="75" loc="-77565,-184960,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="20547" title="[Kamaloka Monster]" count="1" range="75" loc="-77349,-185173,-10992" drops="4037-1-1-500000;" />
+		</spawns>
+		
+		<stage order="2" loc="-80102,-185541,-10744" teleport="false" minutes="10"/>
+		<spawns stage="2">
+			<spawn npcId="20401" title="[Kamaloka Monster]" count="2" range="75" loc="-80536,-185176,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="20402" title="[Kamaloka Monster]" count="2" range="75" loc="-80323,-184963,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="20079" title="[Kamaloka Monster]" count="2" range="75" loc="-79903,-184959,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="20086" title="[Kamaloka Monster]" count="2" range="75" loc="-79688,-185168,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="21166" title="[Kamaloka Monster]" count="2" range="75" loc="-79678,-185842,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="21187" title="[Kamaloka Monster]" count="2" range="75" loc="-79892,-186056,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="20058" title="[Kamaloka Monster]" count="2" range="75" loc="-80320,-186058,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="20547" title="[Kamaloka Monster]" count="2" range="75" loc="-80530,-185848,-10728" drops="4037-1-1-500000;" />
+		</spawns>
+		<stage order="3" loc="-82440,-185543,-10480" teleport="false" minutes="15"/>
+		<spawns stage="3">
+			<spawn npcId="20401" title="[Kamaloka Monster]" count="3" range="75" loc="-82865,-185173,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="20402" title="[Kamaloka Monster]" count="3" range="75" loc="-82658,-184962,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="20079" title="[Kamaloka Monster]" count="3" range="75" loc="-82233,-184957,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="20086" title="[Kamaloka Monster]" count="3" range="75" loc="-82019,-185168,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="21166" title="[Kamaloka Monster]" count="3" range="75" loc="-82017,-185846,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="21187" title="[Kamaloka Monster]" count="3" range="75" loc="-82226,-186054,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="20058" title="[Kamaloka Monster]" count="3" range="75" loc="-82648,-186055,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="20547" title="[Kamaloka Monster]" count="3" range="75" loc="-82867,-185844,-10464" drops="4037-1-1-500000;" />
+		</spawns>
+		<stage order="4" loc="-85320,-185541,-10032" teleport="false" minutes="15"/>
+		<spawns stage="4">
+			<spawn npcId="55010" title="[Kamaloka Raid]" count="1" range="75" loc="-86217,-185544,-10040" drops="4037-1-1-500000;" />
+		</spawns>
+	</dungeon>
+
+	<!-- ... Continue o padrão para os outros níveis até 80 ... -->
+	
+	<!-- Níveis 75-80 -->
+	<dungeon id="21" name="Hall of the Abyss (75-80)" type="solo" sharedInstance="false">
+		<cooldown minutes="30"/>
+		
+		<stage order="1" loc="-76433,-185540,-11000" teleport="true" minutes="10"/>
+		<spawns stage="1">
+			<spawn npcId="20401" title="[Kamaloka Monster]" count="1" range="100" loc="-77348,-185845,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="20402" title="[Kamaloka Monster]" count="1" range="100" loc="-77562,-186061,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="20079" title="[Kamaloka Monster]" count="1" range="75" loc="-77984,-186057,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="20086" title="[Kamaloka Monster]" count="1" range="75" loc="-78198,-185844,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="21166" title="[Kamaloka Monster]" count="1" range="75" loc="-78201,-185175,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="21187" title="[Kamaloka Monster]" count="1" range="75" loc="-77994,-184962,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="20058" title="[Kamaloka Monster]" count="1" range="75" loc="-77565,-184960,-10992" drops="4037-1-1-500000;" />
+			<spawn npcId="20547" title="[Kamaloka Monster]" count="1" range="75" loc="-77349,-185173,-10992" drops="4037-1-1-500000;" />
+		</spawns>
+		
+		<stage order="2" loc="-80102,-185541,-10744" teleport="false" minutes="10"/>
+		<spawns stage="2">
+			<spawn npcId="20401" title="[Kamaloka Monster]" count="2" range="75" loc="-80536,-185176,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="20402" title="[Kamaloka Monster]" count="2" range="75" loc="-80323,-184963,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="20079" title="[Kamaloka Monster]" count="2" range="75" loc="-79903,-184959,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="20086" title="[Kamaloka Monster]" count="2" range="75" loc="-79688,-185168,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="21166" title="[Kamaloka Monster]" count="2" range="75" loc="-79678,-185842,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="21187" title="[Kamaloka Monster]" count="2" range="75" loc="-79892,-186056,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="20058" title="[Kamaloka Monster]" count="2" range="75" loc="-80320,-186058,-10728" drops="4037-1-1-500000;" />
+			<spawn npcId="20547" title="[Kamaloka Monster]" count="2" range="75" loc="-80530,-185848,-10728" drops="4037-1-1-500000;" />
+		</spawns>
+		<stage order="3" loc="-82440,-185543,-10480" teleport="false" minutes="15"/>
+		<spawns stage="3">
+			<spawn npcId="20401" title="[Kamaloka Monster]" count="3" range="75" loc="-82865,-185173,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="20402" title="[Kamaloka Monster]" count="3" range="75" loc="-82658,-184962,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="20079" title="[Kamaloka Monster]" count="3" range="75" loc="-82233,-184957,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="20086" title="[Kamaloka Monster]" count="3" range="75" loc="-82019,-185168,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="21166" title="[Kamaloka Monster]" count="3" range="75" loc="-82017,-185846,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="21187" title="[Kamaloka Monster]" count="3" range="75" loc="-82226,-186054,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="20058" title="[Kamaloka Monster]" count="3" range="75" loc="-82648,-186055,-10464" drops="4037-1-1-500000;" />
+			<spawn npcId="20547" title="[Kamaloka Monster]" count="3" range="75" loc="-82867,-185844,-10464" drops="4037-1-1-500000;" />
+		</spawns>
+		<stage order="4" loc="-85320,-185541,-10032" teleport="false" minutes="15"/>
+		<spawns stage="4">
+			<spawn npcId="55010" title="[Kamaloka Raid]" count="1" range="75" loc="-86217,-185544,-10040" drops="4037-1-1-500000;" />
+		</spawns>
 	</dungeon>
 </list>

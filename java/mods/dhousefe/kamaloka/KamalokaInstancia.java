@@ -67,8 +67,10 @@ public final class KamalokaInstancia implements L2JExtension, OnBypassCommandLis
     private static final String BYPASS_PREFIX = "kamaloka_";
 
     // --- ID da Dungeon no XML ---
-    private static final int KAMALOKA_SOLO_DUNGEON_ID = 10; // ID da sua dungeon "Heretic HexTec"
-    private static final int KAMALOKA_PARTY_DUNGEON_ID = 11; // ID da sua dungeon "Team Trial"
+    //private static final int KAMALOKA_SOLO_DUNGEON_ID = 10; // ID da sua dungeon "Heretic HexTec"
+    //private static final int KAMALOKA_PARTY_DUNGEON_ID = 11; // ID da sua dungeon "Team Trial"
+    // ALTERAÇÃO: ID da dungeon de party. Os IDs de solo agora são calculados dinamicamente.
+    private static final int LABYRINTH_OF_ABYSS_ID = 9; // Modo Party
 
     // --- Configurações da Instância ---
     private static final int INSTANCE_COOLDOWN_MINUTES = 320;
@@ -232,6 +234,19 @@ public final class KamalokaInstancia implements L2JExtension, OnBypassCommandLis
         return true;
     }
 
+    /**
+     * ALTERAÇÃO: Novo método para calcular o ID da dungeon solo com base no nível do jogador.
+     * @param level O nível do jogador.
+     * @return O ID da dungeon correspondente ou -1 se o nível for inválido.
+     */
+    private int getSoloDungeonIdForLevel(int level) {
+        if (level < 20 || level > 80) {
+            return -1; // Fora da faixa de níveis permitida
+        }
+        // Fórmula para mapear níveis para IDs (20-24 -> 10, 25-29 -> 11, etc.)
+        return 10 + ((level - 20) / 5);
+    }
+
     private void handleEnterInstance(Player player, boolean isSolo) {
         if (player.getDungeon() != null) {
             player.sendMessage("Você já está em uma dungeon.");
@@ -246,19 +261,20 @@ public final class KamalokaInstancia implements L2JExtension, OnBypassCommandLis
             }
         }
 
-        final int dungeonId = isSolo ? KAMALOKA_SOLO_DUNGEON_ID : KAMALOKA_PARTY_DUNGEON_ID;
-        final DungeonTemplate template = DungeonData.getInstance().getDungeon(dungeonId);
-
-        if (template == null) {
-            LOGGER.warn("[" + getName() + "] Tentativa de entrar na dungeon com ID " + dungeonId + ", mas o template não foi encontrado.");
-            player.sendMessage("A configuração para esta dungeon não foi encontrada. Contate um administrador.");
-            return;
-        }
-
+        int dungeonId;
         List<Player> participants;
+
         if (isSolo) {
+            // ALTERAÇÃO: Lógica para modo solo
+            dungeonId = getSoloDungeonIdForLevel(player.getStatus().getLevel());
+            if (dungeonId == -1) {
+                player.sendMessage("Seu nível não é compatível para entrar no Hall of the Abyss.");
+                return;
+            }
             participants = Collections.singletonList(player);
         } else {
+            // Lógica para modo party
+            dungeonId = LABYRINTH_OF_ABYSS_ID;
             final Party party = player.getParty();
             if (party == null) {
                 showHtml(player, "322-no-party.htm");
@@ -266,21 +282,25 @@ public final class KamalokaInstancia implements L2JExtension, OnBypassCommandLis
             }
             participants = party.getMembers();
         }
+
+        final DungeonTemplate template = DungeonData.getInstance().getDungeon(dungeonId);
+
+        if (template == null) {
+            LOGGER.warn("[" + getName() + "] Tentativa de entrar na dungeon com ID " + dungeonId + ", mas o template não foi encontrado no XML.");
+            player.sendMessage("A configuração para esta dungeon não foi encontrada. Contate um administrador.");
+            return;
+        }
+
         try {
             long currentTime = System.currentTimeMillis();
-
             participants.forEach(p -> _playerEntryTimes.put(p.getObjectId(), currentTime));
 
             KamalokaDungeon dungeon = new KamalokaDungeon(template, participants);
-
             _dungeons.put(dungeon.getInstanceId(), dungeon);
 
-            showHtml(player, "322-teleported.htm");
         } catch (Exception e) {
-            LOGGER.info("[" + getName() + "] Problemas ao criar a dungeon: " + e.getMessage());
-
+            LOGGER.error("[" + getName() + "] Problemas ao criar a dungeon: ", e);
         }
-
     }
 
     private void copyResourceIfNotExists(String resourcePath, String destinationPath) throws IOException {
@@ -417,9 +437,11 @@ public final class KamalokaInstancia implements L2JExtension, OnBypassCommandLis
     private class KamalokaDungeon extends Dungeon {
         //private final MapInstance _instance;
         private final int _instanceId = INSTANCE_NAME.hashCode() ^ System.identityHashCode(this);
+        private final String _dungeonName;
 
         public KamalokaDungeon(DungeonTemplate template, List<Player> players) {
             super(template, players); // Agora usa o template carregado do XML
+            _dungeonName = template.name;
             //_instance = InstanceManager.getInstance().createInstance();
             // A lógica de startDungeon() da classe pai (Dungeon) será chamada automaticamente.
         }
@@ -508,13 +530,13 @@ public final class KamalokaInstancia implements L2JExtension, OnBypassCommandLis
         
         private void cleanupDungeon(boolean failed) {
             if (failed) {
-                broadcastToDungeon("A incursão em Kamaloka falhou.");
+                broadcastToDungeon("A incursão em " + _dungeonName + " falhou.");
                 cancelDungeon();
             }
 
             getPlayers().forEach(p -> {
                 if (p != null && p.isOnline()) {
-                    KamalokaInstancia.getInstance().teleportPlayer(p, TELEPORT_EXIT_LOC, "Você foi retornado de Kamaloka.", 1);
+                    KamalokaInstancia.getInstance().teleportPlayer(p, TELEPORT_EXIT_LOC, "Você foi retornado de " + _dungeonName + ".", 1);
                     p.setDungeon(null);
                     p.setInstanceMap(null, true);
                     p.setIsImmobilized(false);
