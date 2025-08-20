@@ -422,13 +422,19 @@ public final class KamalokaInstancia implements L2JExtension, OnBypassCommandLis
             }
             
             final int castTime = channelingSkill.getHitTime() - 2000;
-            
+            List<Player> participants;
             if (isSolo) {
-                if (!checkPlayerRestrictions(player)) return;
-                
+                if (!checkPlayerRestrictions(player)){
+                    
+                 return;
+                }
+                player.abortAll(true);
                 player.getCast().doCast(channelingSkill, player, null);
+                participants = Collections.singletonList(player);
+                
                 player.sendMessage("Preparando para entrar na instância... Não cancele a habilidade!");
-                _executor.schedule(() -> proceedToInstance(Collections.singletonList(player), true, channelingSkill), castTime, TimeUnit.MILLISECONDS);
+                //participants.forEach(p -> player.getCast().doCast(channelingSkill, player, null));
+                _executor.schedule(() -> proceedToInstance(participants, true, channelingSkill), castTime, TimeUnit.MILLISECONDS);
 
             } else { // Modo Party
                 final Party party = player.getParty();
@@ -436,7 +442,7 @@ public final class KamalokaInstancia implements L2JExtension, OnBypassCommandLis
                     showHtml(player, "322-no-party.htm");
                     return;
                 }
-                List<Player> participants = party.getMembers();
+                participants = party.getMembers();
                 
                 // Verifica as restrições para todos os membros da party
                 for (Player member : participants) {
@@ -519,10 +525,14 @@ public final class KamalokaInstancia implements L2JExtension, OnBypassCommandLis
     }
     
     private void proceedToInstance(List<Player> participants, boolean isSolo, L2Skill skillUsed) {
+        Player player = participants.get(0);
         if (participants == null || participants.isEmpty()) {
-            return;
+            
+            participants = Collections.singletonList(player);
+            player.sendMessage("Erro ao coletar participantes.");
+            //return;
         }
-        Player leader = participants.get(0);
+        
 
         // Se uma skill de canalização foi usada, verifica se ela foi completada por todos
         if (skillUsed != null) {
@@ -550,9 +560,9 @@ public final class KamalokaInstancia implements L2JExtension, OnBypassCommandLis
         }
 
         if (!allowRepeat.get()) {
-            long lastEntry = _playerEntryTimes.getOrDefault(leader.getObjectId(), 0L);
+            long lastEntry = _playerEntryTimes.getOrDefault(player.getObjectId(), 0L);
             if (isToday(lastEntry)) {
-                showHtml(leader, "322-daily-limit.htm");
+                showHtml(player, "322-daily-limit.htm");
                 return;
             }
         }
@@ -560,13 +570,13 @@ public final class KamalokaInstancia implements L2JExtension, OnBypassCommandLis
         int dungeonId;
 
         if (isSolo) {
-            dungeonId = getSoloDungeonIdForLevel(leader.getStatus().getLevel());
-            leader.getParty().disband();
+            dungeonId = getSoloDungeonIdForLevel(player.getStatus().getLevel());
+            
             if (dungeonId == -1) {
-                leader.sendMessage("Seu nível não é compatível para entrar no Hall of the Abyss.");
+                player.sendMessage("Seu nível não é compatível para entrar no Hall of the Abyss.");
                 return;
             }
-            participants = Collections.singletonList(leader);
+            //participants = Collections.singletonList(player);
         } else {
             dungeonId = LABYRINTH_OF_ABYSS_ID;
         }
@@ -575,7 +585,7 @@ public final class KamalokaInstancia implements L2JExtension, OnBypassCommandLis
 
         if (template == null) {
             LOGGER.warn("[" + getName() + "] Tentativa de entrar na dungeon com ID " + dungeonId + ", mas o template não foi encontrado no XML.");
-            leader.sendMessage("A configuração para esta dungeon não foi encontrada. Contate um administrador.");
+            player.sendMessage("A configuração para esta dungeon não foi encontrada. Contate um administrador.");
             return;
         }
 
@@ -585,7 +595,7 @@ public final class KamalokaInstancia implements L2JExtension, OnBypassCommandLis
 
             KamalokaDungeon dungeon = new KamalokaDungeon(template, participants);
             _dungeons.put(dungeon.getInstanceId(), dungeon);
-
+            //if (isSolo) {player.getParty().disband();}
         } catch (Exception e) {
             LOGGER.error("[" + getName() + "] Problemas ao criar a dungeon: ", e);
         }
