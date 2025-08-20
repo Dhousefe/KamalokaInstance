@@ -16,6 +16,7 @@ import ext.mods.extensions.listener.manager.CreatureListenerManager;
 import ext.mods.extensions.listener.manager.NpcListenerManager;
 import ext.mods.extensions.listener.manager.PlayerListenerManager;
 import ext.mods.extensions.listener.actor.npc.OnInteractListener;
+import ext.mods.gameserver.data.SkillTable;
 import ext.mods.gameserver.data.xml.NpcData;
 import ext.mods.gameserver.enums.MessageType;
 import ext.mods.gameserver.model.group.Party;
@@ -23,13 +24,12 @@ import ext.mods.gameserver.model.actor.Creature;
 import ext.mods.gameserver.model.actor.Npc;
 import ext.mods.gameserver.model.actor.Player;
 import ext.mods.gameserver.model.location.Location;
-//import ext.mods.gameserver.model.location.MapRegion;
 import ext.mods.gameserver.model.location.SpawnLocation;
 import ext.mods.gameserver.model.spawn.Spawn;
 import ext.mods.gameserver.network.serverpackets.CreatureSay;
 import ext.mods.gameserver.enums.SayType;
 import ext.mods.gameserver.network.serverpackets.NpcHtmlMessage;
-
+import ext.mods.gameserver.skills.L2Skill;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -65,6 +65,7 @@ public final class KamalokaInstancia implements L2JExtension, OnBypassCommandLis
     private static final int NPC_ID = 55020;
     private static final int BOSS_ID = 55021;
     private static final String BYPASS_PREFIX = "kamaloka_";
+    private static final int CHANNELING_SKILL_ID = 2013;
 
     // --- ID da Dungeon no XML ---
     //private static final int KAMALOKA_SOLO_DUNGEON_ID = 10; // ID da sua dungeon "Heretic HexTec"
@@ -247,9 +248,110 @@ public final class KamalokaInstancia implements L2JExtension, OnBypassCommandLis
         return 10 + ((level - 20) / 5);
     }
 
-    private void handleEnterInstance(Player player, boolean isSolo) {
+    
+    /*private void handleEnterInstance (Player player, boolean isSolo){
         if (player.getDungeon() != null) {
             player.sendMessage("Você já está em uma dungeon.");
+            return;
+        }
+        if (!isSolo) {
+            final Party party = player.getParty();
+            if (party == null) {
+                showHtml(player, "322-no-party.htm");
+                return;
+            }
+        }
+        
+        // Verificações de restrição
+        if (player.isInCombat()) {
+            player.sendMessage("Você não pode entrar enquanto estiver em combate.");
+            return;
+        }
+        if (player.isInOlympiadMode()) {
+            player.sendMessage("Você não pode entrar durante uma partida da Olympiad.");
+            return;
+        }
+        if (player.getPvpFlag() != 0) {
+            player.sendMessage("Você não pode entrar enquanto estiver em modo PvP.");
+            return;
+        }
+        if (player.isDead()) {
+            player.sendMessage("Você não pode usar isto morto");
+            return;
+        }
+        if (player.isFakeDeath()) {
+            player.sendMessage("Você não pode usar isto em FakeDeath");
+            return;
+        }
+        if (player.isFishing()) {
+            player.sendMessage("Você não pode usar isto pescando");
+            return;
+        }
+        if (player.isInDuel()) {
+            player.sendMessage("Você não pode usar isto em duelo");
+            return;
+        }
+        if (player.isInArena()) {
+            player.sendMessage("Você não pode usar isto em arena");
+            return;
+        }
+        if (player.isInJail()) {
+            player.sendMessage("Você não pode usar isto na Jail");
+            return;
+        }
+        if (player.isInStoreMode()) {
+            player.sendMessage("Você não pode usar isto no momento");
+            return;
+        }
+        if (player.isInObserverMode()) {
+            player.sendMessage("Você não pode usar isto no momento");
+            return;
+        }
+        if (player.getCast().isCastingNow()){
+            player.sendMessage("Você não pode usar isto no momento");
+            return;
+        }
+        
+
+        // Lógica de canalização com verificação de combate
+        try {
+            // Usamos uma skill visual para simular o tempo de "preparação"
+            final L2Skill channelingSkill = SkillTable.getInstance().getInfo(2013, 1);
+            if (channelingSkill == null) {
+                LOGGER.warn("[" + getName() + "] Skill de canalização não encontrada: 2013");
+                player.sendMessage("Ocorreu um erro ao tentar entrar na instância.");
+                return;
+            }
+
+            player.getCast().doCast(channelingSkill, player, null);
+            player.sendMessage("Preparando para entrar na instância...");
+            
+
+            // Agenda a continuação da lógica após o tempo de casting da skill
+            _executor.schedule(() -> proceedToInstance(player, isSolo), 15, TimeUnit.SECONDS); // Atraso de 5 segundos
+
+        } catch (Exception e) {
+            LOGGER.error("[" + getName() + "] Erro durante a canalização para a instância: ", e);
+        }
+    }
+    
+    private void proceedToInstance(Player player, boolean isSolo) {
+        // Verificação final: o jogador entrou em combate durante a canalização?
+        // A skill de canalização é 2013, nível 1.
+        final L2Skill channelingSkill = SkillTable.getInstance().getInfo(2013, 1);
+        if (channelingSkill != null) {
+            // Verificação final: se o jogador teve cast foi cancelado.
+            if (!player.getCast().isCastingNow() || player.getCast().getCurrentSkill().getId() != 2013) {
+                player.sendMessage("Sua entrada foi cancelada porque a preparação foi interrompida.");
+                
+                
+                return;
+            }
+            // Se chegou aqui, o cast foi bem sucedido. Removemos o buff para não deixar efeitos indesejados.
+            player.stopSkillEffects(channelingSkill.getId());
+        }
+        if (player.isInCombat()) {
+            player.sendMessage("Sua entrada foi cancelada pois você entrou em combate.");
             return;
         }
 
@@ -257,6 +359,10 @@ public final class KamalokaInstancia implements L2JExtension, OnBypassCommandLis
             long lastEntry = _playerEntryTimes.getOrDefault(player.getObjectId(), 0L);
             if (isToday(lastEntry)) {
                 showHtml(player, "322-daily-limit.htm");
+                player.stopSkillEffects(channelingSkill.getId());
+                
+                player.broadcastCharInfo();
+                player.broadcastUserInfo();
                 return;
             }
         }
@@ -265,7 +371,7 @@ public final class KamalokaInstancia implements L2JExtension, OnBypassCommandLis
         List<Player> participants;
 
         if (isSolo) {
-            // ALTERAÇÃO: Lógica para modo solo
+            // Lógica para modo solo
             dungeonId = getSoloDungeonIdForLevel(player.getStatus().getLevel());
             if (dungeonId == -1) {
                 player.sendMessage("Seu nível não é compatível para entrar no Hall of the Abyss.");
@@ -288,6 +394,187 @@ public final class KamalokaInstancia implements L2JExtension, OnBypassCommandLis
         if (template == null) {
             LOGGER.warn("[" + getName() + "] Tentativa de entrar na dungeon com ID " + dungeonId + ", mas o template não foi encontrado no XML.");
             player.sendMessage("A configuração para esta dungeon não foi encontrada. Contate um administrador.");
+            return;
+        }
+
+        try {
+            long currentTime = System.currentTimeMillis();
+            participants.forEach(p -> _playerEntryTimes.put(p.getObjectId(), currentTime));
+
+            KamalokaDungeon dungeon = new KamalokaDungeon(template, participants);
+            _dungeons.put(dungeon.getInstanceId(), dungeon);
+
+        } catch (Exception e) {
+            LOGGER.error("[" + getName() + "] Problemas ao criar a dungeon: ", e);
+        }
+    }*/
+
+    private void handleEnterInstance(Player player, boolean isSolo) {
+        // Lógica de canalização com verificação de combate
+        
+        try {
+            final L2Skill channelingSkill = SkillTable.getInstance().getInfo(CHANNELING_SKILL_ID, 1);
+            if (channelingSkill == null) {
+                LOGGER.warn("[" + getName() + "] Skill de canalização não encontrada: " + CHANNELING_SKILL_ID);
+                player.sendMessage("Ocorreu um erro ao tentar entrar na instância.");
+                proceedToInstance(Collections.singletonList(player), isSolo, null);
+                return;
+            }
+            
+            final int castTime = channelingSkill.getHitTime() - 2000;
+            
+            if (isSolo) {
+                if (!checkPlayerRestrictions(player)) return;
+                
+                player.getCast().doCast(channelingSkill, player, null);
+                player.sendMessage("Preparando para entrar na instância... Não cancele a habilidade!");
+                _executor.schedule(() -> proceedToInstance(Collections.singletonList(player), true, channelingSkill), castTime, TimeUnit.MILLISECONDS);
+
+            } else { // Modo Party
+                final Party party = player.getParty();
+                if (party == null) {
+                    showHtml(player, "322-no-party.htm");
+                    return;
+                }
+                List<Player> participants = party.getMembers();
+                
+                // Verifica as restrições para todos os membros da party
+                for (Player member : participants) {
+                    
+                    if (!checkPlayerRestrictions(member)) {
+                        party.broadcastToPartyMembers(player, new CreatureSay(0, SayType.PARTY, "Entrada cancelada", "Um membro da party (" + member.getName() + ") não cumpre os requisitos."));
+                        return;
+                    }
+                    member.abortAll(true);
+                }
+                
+                // Inicia a canalização para todos os membros
+                party.broadcastToPartyMembers(player, new CreatureSay(0, SayType.PARTY, "Preparando", "Todos os membros devem permanecer parados para entrar na instância..."));
+                participants.forEach(member -> member.getCast().doCast(channelingSkill, member, null));
+                
+                _executor.schedule(() -> proceedToInstance(participants, false, channelingSkill), castTime, TimeUnit.MILLISECONDS);
+            }
+
+        } catch (Exception e) {
+            LOGGER.error("[" + getName() + "] Erro durante a canalização para a instância: ", e);
+        }
+    }
+
+    private boolean checkPlayerRestrictions(Player player) {
+        if (player.getDungeon() != null) {
+            player.sendMessage("Você já está em uma dungeon.");
+            return false;
+        }
+                
+        // Verificações de restrição
+        if (player.isInCombat()) {
+            player.sendMessage("Você não pode entrar enquanto estiver em combate.");
+            return false;
+        }
+        if (player.isInOlympiadMode()) {
+            player.sendMessage("Você não pode entrar durante uma partida da Olympiad.");
+            return false;
+        }
+        if (player.getPvpFlag() != 0) {
+            player.sendMessage("Você não pode entrar enquanto estiver em modo PvP.");
+            return false;
+        }
+        if (player.isDead()) {
+            player.sendMessage("Você não pode usar isto morto");
+            return false;
+        }
+        if (player.isFakeDeath()) {
+            player.sendMessage("Você não pode usar isto em FakeDeath");
+            return false;
+        }
+        if (player.isFishing()) {
+            player.sendMessage("Você não pode usar isto pescando");
+            return false;
+        }
+        if (player.isInDuel()) {
+            player.sendMessage("Você não pode usar isto em duelo");
+            return false;
+        }
+        if (player.isInArena()) {
+            player.sendMessage("Você não pode usar isto em arena");
+            return false;
+        }
+        if (player.isInJail()) {
+            player.sendMessage("Você não pode usar isto na Jail");
+            return false;
+        }
+        if (player.isInStoreMode()) {
+            player.sendMessage("Você não pode usar isto no momento");
+            return false;
+        }
+        if (player.isInObserverMode()) {
+            player.sendMessage("Você não pode usar isto no momento");
+            return false;
+        }
+        if (player.getCast().isCastingNow()){
+            player.sendMessage("Você não pode usar isto no momento");
+            return false;
+        }
+        return true;
+    }
+    
+    private void proceedToInstance(List<Player> participants, boolean isSolo, L2Skill skillUsed) {
+        if (participants == null || participants.isEmpty()) {
+            return;
+        }
+        Player leader = participants.get(0);
+
+        // Se uma skill de canalização foi usada, verifica se ela foi completada por todos
+        if (skillUsed != null) {
+            for (Player member : participants) {
+                if (member.getCast().getCurrentSkill().getId() != CHANNELING_SKILL_ID) {
+                    String message = "Sua entrada foi cancelada porque a preparação foi interrompida.";
+                    if (!isSolo) {
+                        message = "A preparação de " + member.getName() + " foi interrompida.";
+                        participants.forEach(p -> {
+                            p.abortAll(true);
+                        return;
+                        });
+                    }
+                    
+                    final String finalMessage = message;
+                    participants.forEach(p -> {
+                        p.sendMessage(finalMessage);
+                        if (!p.getCast().isCastingNow() || p.getCast().getCurrentSkill().getId() != CHANNELING_SKILL_ID) p.abortAll(true);
+                    });
+                    return;
+                }
+            }
+            // Se todos completaram, remove o buff de todos
+            participants.forEach(member -> member.stopSkillEffects(skillUsed.getId()));
+        }
+
+        if (!allowRepeat.get()) {
+            long lastEntry = _playerEntryTimes.getOrDefault(leader.getObjectId(), 0L);
+            if (isToday(lastEntry)) {
+                showHtml(leader, "322-daily-limit.htm");
+                return;
+            }
+        }
+
+        int dungeonId;
+
+        if (isSolo) {
+            dungeonId = getSoloDungeonIdForLevel(leader.getStatus().getLevel());
+            leader.getParty().disband();
+            if (dungeonId == -1) {
+                leader.sendMessage("Seu nível não é compatível para entrar no Hall of the Abyss.");
+                return;
+            }
+        } else {
+            dungeonId = LABYRINTH_OF_ABYSS_ID;
+        }
+
+        final DungeonTemplate template = DungeonData.getInstance().getDungeon(dungeonId);
+
+        if (template == null) {
+            LOGGER.warn("[" + getName() + "] Tentativa de entrar na dungeon com ID " + dungeonId + ", mas o template não foi encontrado no XML.");
+            leader.sendMessage("A configuração para esta dungeon não foi encontrada. Contate um administrador.");
             return;
         }
 
@@ -573,7 +860,7 @@ public final class KamalokaInstancia implements L2JExtension, OnBypassCommandLis
             return _instanceId;
         }
 
-        private void broadcastToDungeon(String message) {
+        public void broadcastToDungeon(String message) {
             getPlayers().forEach(p -> {
                 if (p != null && p.isOnline()) {
                     p.sendPacket(new CreatureSay(0, SayType.TELL, "Kamaloka", message));
