@@ -566,6 +566,7 @@ public final class KamalokaInstancia implements L2JExtension, OnBypassCommandLis
                 leader.sendMessage("Seu nível não é compatível para entrar no Hall of the Abyss.");
                 return;
             }
+            participants = Collections.singletonList(leader);
         } else {
             dungeonId = LABYRINTH_OF_ABYSS_ID;
         }
