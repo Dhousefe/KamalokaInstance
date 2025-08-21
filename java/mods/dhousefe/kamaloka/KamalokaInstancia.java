@@ -8,6 +8,7 @@ import ext.mods.dungeon.DungeonManager;
 import ext.mods.dungeon.DungeonTemplate;
 import ext.mods.dungeon.data.DungeonData;
 import ext.mods.dungeon.enums.DungeonType;
+import ext.mods.dungeon.holder.SpawnTemplate;
 import ext.mods.extensions.interfaces.L2JExtension;
 import ext.mods.extensions.listener.OnKillListener;
 import ext.mods.extensions.listener.command.OnBypassCommandListener;
@@ -18,6 +19,7 @@ import ext.mods.extensions.listener.manager.PlayerListenerManager;
 import ext.mods.extensions.listener.actor.npc.OnInteractListener;
 import ext.mods.gameserver.data.SkillTable;
 import ext.mods.gameserver.data.xml.NpcData;
+import ext.mods.gameserver.model.actor.template.NpcTemplate;
 import ext.mods.gameserver.enums.MessageType;
 import ext.mods.gameserver.model.group.Party;
 import ext.mods.gameserver.model.actor.Creature;
@@ -29,6 +31,8 @@ import ext.mods.gameserver.model.spawn.Spawn;
 import ext.mods.gameserver.network.serverpackets.CreatureSay;
 import ext.mods.gameserver.enums.SayType;
 import ext.mods.gameserver.network.serverpackets.NpcHtmlMessage;
+import ext.mods.commons.data.StatSet; // This line is already correct.
+import ext.mods.gameserver.model.actor.template.CreatureTemplate;
 import ext.mods.gameserver.skills.L2Skill;
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,6 +40,7 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -88,6 +93,7 @@ public final class KamalokaInstancia implements L2JExtension, OnBypassCommandLis
     // --- Estado do Manager ---
     private static final AtomicBoolean allowRepeat = new AtomicBoolean(true);
     private final ConcurrentHashMap<Integer, Long> _playerEntryTimes = new ConcurrentHashMap<>();
+    private final AtomicInteger _customNpcIdCounter = new AtomicInteger(60000); // Inicia em um ID alto para evitar conflitos
     private final ConcurrentHashMap<Integer, KamalokaDungeon> _dungeons = new ConcurrentHashMap<>();
 
     // --- Tarefas Agendadas ---
@@ -108,6 +114,7 @@ public final class KamalokaInstancia implements L2JExtension, OnBypassCommandLis
             copyResourceIfNotExists("mods/kamaloka/xmls/Kamaloka_Dungeon.xml", "./data/custom/mods/Kamaloka_Dungeon.xml");
             // Carrega as dungeons do seu arquivo XML customizado
             DungeonData.getInstance().parseDataFile("custom/mods/Kamaloka_Dungeon.xml");
+            modifyDungeonSpawns();
             
 
         } catch (IOException e) {
@@ -233,6 +240,83 @@ public final class KamalokaInstancia implements L2JExtension, OnBypassCommandLis
             }
         });
         return true;
+    }
+
+    /**
+     * Itera sobre os templates de dungeon carregados e cria versões customizadas dos monstros
+     * para ajustar a dificuldade.
+     */
+    private void modifyDungeonSpawns() {
+        List<Integer> dungeonIds = new ArrayList<>();
+        for (int level = 20; level <= 80; level += 5) {
+            int id = getSoloDungeonIdForLevel(level);
+            if (id != -1) {
+                dungeonIds.add(id);
+            }
+        }
+        dungeonIds.add(LABYRINTH_OF_ABYSS_ID);
+
+        for (int dungeonId : dungeonIds) {
+            DungeonTemplate dungeonTemplate = DungeonData.getInstance().getDungeon(dungeonId);
+            if (dungeonTemplate == null) {
+                continue;
+            }
+
+            for (List<SpawnTemplate> spawnList : dungeonTemplate.spawns.values()) {
+                for (SpawnTemplate spawn : spawnList) {
+                    NpcTemplate template = NpcData.getInstance().getTemplate(spawn.npcId);
+                    if (template == null) {
+                        continue;
+                    }
+
+                    boolean isMonster = "[Kamaloka Monster]".equals(spawn.title);
+                    boolean isRaid = "[Kamaloka Raid]".equals(spawn.title);
+
+                    if (isMonster || isRaid) {
+                        try {
+                            if (isMonster) {
+                                // Acessa o campo público _baseHpMax herdado de CreatureTemplate
+                                template._baseHpMax *= 1.7;
+                            } else { // isRaid
+                                // Acessa os campos públicos _basePAtk e _baseMAtk etc... e os divide
+                                template._basePAtk /= 8;
+                                template._baseMAtk /= 8;
+                                template._baseMDef /= 5;
+                                template._basePDef /= 2;
+
+                                /*package ext.mods.gameserver.model.actor.template;
+
+                                import ext.mods.commons.data.StatSet;
+
+                                public class CreatureTemplate {
+                                private final int _baseSTR;
+                                private final int _baseCON;
+                                private final int _baseDEX;
+                                private final int _baseINT;
+                                private final int _baseWIT;
+                                private final int _baseMEN;
+                                public double _baseHpMax;
+                                public double _baseMpMax;
+                                private final double _baseHpRegen;
+                                private final double _baseMpRegen;
+                                public double _basePAtk;
+                                public double _baseMAtk;
+                                public double _basePDef;
+                                public double _baseMDef;
+                                private final double _basePAtkSpd;
+                                private final double _baseCritRate;
+                                private final double _baseWalkSpd;
+                                private final double _baseRunSpd;
+                                protected final double _collisionRadius;
+                                protected final double _collisionHeight;*/
+                            }
+                        } catch (Exception e) {
+                            LOGGER.error("[" + getName() + "] Falha ao modificar stats para NPC ID " + spawn.npcId, e);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**
