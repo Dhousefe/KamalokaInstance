@@ -320,6 +320,14 @@ public final class KamalokaInstancia implements L2JExtension, OnBypassCommandLis
                             
 
                             if (isMonster) {
+                                
+                                int targetLevel = baseLevel + 5;
+                                Field levelField = NpcTemplate.class.getDeclaredField("_level");
+                                levelField.setAccessible(true);
+                                levelField.setByte(template, (byte)targetLevel);
+                                // Acessa o campo público _baseHpMax herdado de CreatureTemplate
+                                template._baseHpMax *= 1.7;
+                                template._basePDef /= 1.4;
                                 if (monsterFound) {
                                     // Equaliza o nível de todos os monstros com base no menor encontrado
                                     Field levelFieldfinal = NpcTemplate.class.getDeclaredField("_level");
@@ -329,16 +337,8 @@ public final class KamalokaInstancia implements L2JExtension, OnBypassCommandLis
                                     // Equaliza e dobra o HP de todos os monstros com base no menor encontrado
                                     Field hpField = CreatureTemplate.class.getDeclaredField("_baseHpMax");
                                     hpField.setAccessible(true);
-                                    hpField.setDouble(template, minHp * 4);
+                                    hpField.setDouble(template, minHp * 2);
                                 }
-                                int targetLevel = baseLevel - 5;
-                                Field levelField = NpcTemplate.class.getDeclaredField("_level");
-                                levelField.setAccessible(true);
-                                levelField.setByte(template, (byte)targetLevel);
-                                // Acessa o campo público _baseHpMax herdado de CreatureTemplate
-                                //template._baseHpMax *= 1.2;
-                                template._basePDef /= 1.4;
-                                
                                 
                             } else { // isRaid
                                 // Acessa os campos públicos _basePAtk e _baseMAtk etc... e os divide
