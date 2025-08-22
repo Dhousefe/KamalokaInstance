@@ -50,6 +50,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
+import java.lang.reflect.Field;
 
 /**
  * Mod Kamaloka Instancia.
@@ -262,6 +263,48 @@ public final class KamalokaInstancia implements L2JExtension, OnBypassCommandLis
                 continue;
             }
 
+            double minHp = Double.MAX_VALUE;
+            byte minLevel = Byte.MAX_VALUE;
+            boolean monsterFound = false;
+            try {
+                for (List<SpawnTemplate> spawnList : dungeonTemplate.spawns.values()) {
+                    for (SpawnTemplate spawn : spawnList) {
+                        if ("[Kamaloka Monster]".equals(spawn.title)) {
+                            NpcTemplate template = NpcData.getInstance().getTemplate(spawn.npcId);
+                            if (template != null) {
+                                Field hpField = CreatureTemplate.class.getDeclaredField("_baseHpMax");
+                                hpField.setAccessible(true);
+                                double currentHp = hpField.getDouble(template);
+                                if (currentHp < minHp) {
+                                    minHp = currentHp;
+                                }
+
+                                Field levelField = NpcTemplate.class.getDeclaredField("_level");
+                                levelField.setAccessible(true);
+                                byte currentLevel = levelField.getByte(template);
+                                if (currentLevel < minLevel) {
+                                    minLevel = currentLevel;
+                                }
+                                monsterFound = true;
+                            }
+                        }
+                    }
+                }
+            } catch (NoSuchFieldException | IllegalAccessException e) {
+                LOGGER.error("[" + getName() + "] Falha ao ler stats via Reflection para encontrar o mínimo na dungeon ID " + dungeonId, e);
+                continue;
+            }
+
+            // Determina o nível base da dungeon para calcular o nível dos monstros
+            int baseLevel = 0;
+            if (dungeonId >= 10 && dungeonId < 22) { // Solo Dungeons
+                baseLevel = ((dungeonId - 10) * 5) + 20;
+            } else if (dungeonId >= 22) { // Party Dungeons
+                baseLevel = ((dungeonId - 22) * 5) + 20;
+            }
+
+            if (baseLevel == 0) continue; // Pula se não for uma dungeon com nível dinâmico
+
             for (List<SpawnTemplate> spawnList : dungeonTemplate.spawns.values()) {
                 for (SpawnTemplate spawn : spawnList) {
                     NpcTemplate template = NpcData.getInstance().getTemplate(spawn.npcId);
@@ -274,9 +317,29 @@ public final class KamalokaInstancia implements L2JExtension, OnBypassCommandLis
 
                     if (isMonster || isRaid) {
                         try {
+                            
+
                             if (isMonster) {
+                                if (monsterFound) {
+                                    // Equaliza o nível de todos os monstros com base no menor encontrado
+                                    Field levelFieldfinal = NpcTemplate.class.getDeclaredField("_level");
+                                    levelFieldfinal.setAccessible(true);
+                                    levelFieldfinal.setByte(template, minLevel);
+
+                                    // Equaliza e dobra o HP de todos os monstros com base no menor encontrado
+                                    Field hpField = CreatureTemplate.class.getDeclaredField("_baseHpMax");
+                                    hpField.setAccessible(true);
+                                    hpField.setDouble(template, minHp * 4);
+                                }
+                                int targetLevel = baseLevel - 5;
+                                Field levelField = NpcTemplate.class.getDeclaredField("_level");
+                                levelField.setAccessible(true);
+                                levelField.setByte(template, (byte)targetLevel);
                                 // Acessa o campo público _baseHpMax herdado de CreatureTemplate
-                                template._baseHpMax *= 1.7;
+                                //template._baseHpMax *= 1.2;
+                                template._basePDef /= 1.4;
+                                
+                                
                             } else { // isRaid
                                 // Acessa os campos públicos _basePAtk e _baseMAtk etc... e os divide
                                 template._basePAtk /= 8;
@@ -284,31 +347,6 @@ public final class KamalokaInstancia implements L2JExtension, OnBypassCommandLis
                                 template._baseMDef /= 5;
                                 template._basePDef /= 2;
 
-                                /*package ext.mods.gameserver.model.actor.template;
-
-                                import ext.mods.commons.data.StatSet;
-
-                                public class CreatureTemplate {
-                                private final int _baseSTR;
-                                private final int _baseCON;
-                                private final int _baseDEX;
-                                private final int _baseINT;
-                                private final int _baseWIT;
-                                private final int _baseMEN;
-                                public double _baseHpMax;
-                                public double _baseMpMax;
-                                private final double _baseHpRegen;
-                                private final double _baseMpRegen;
-                                public double _basePAtk;
-                                public double _baseMAtk;
-                                public double _basePDef;
-                                public double _baseMDef;
-                                private final double _basePAtkSpd;
-                                private final double _baseCritRate;
-                                private final double _baseWalkSpd;
-                                private final double _baseRunSpd;
-                                protected final double _collisionRadius;
-                                protected final double _collisionHeight;*/
                             }
                         } catch (Exception e) {
                             LOGGER.error("[" + getName() + "] Falha ao modificar stats para NPC ID " + spawn.npcId, e);
@@ -330,6 +368,11 @@ public final class KamalokaInstancia implements L2JExtension, OnBypassCommandLis
         }
         // Fórmula para mapear níveis para IDs (20-24 -> 10, 25-29 -> 11, etc.)
         return 10 + ((level - 20) / 5);
+    }
+
+    private int getPartyDungeonIdForLevel(int level) {
+        if (level < 20 || level > 80) return -1;
+        return 22 + ((level - 20) / 5);
     }
 
     
@@ -662,7 +705,18 @@ public final class KamalokaInstancia implements L2JExtension, OnBypassCommandLis
             }
             //participants = Collections.singletonList(player);
         } else {
-            dungeonId = LABYRINTH_OF_ABYSS_ID;
+            int maxLevel = 0;
+            for (Player member : participants) {
+                if (member.getStatus().getLevel() > maxLevel) {
+                    maxLevel = member.getStatus().getLevel();
+                }
+            }
+            
+            dungeonId = getPartyDungeonIdForLevel(maxLevel);
+            if (dungeonId == -1) {
+                player.getParty().broadcastToPartyMembers(player, new CreatureSay(0, SayType.PARTY, "Nível incompatível", "O nível do membro mais alto da party não é compatível para entrar no Labyrinth of the Abyss."));
+                return;
+            }
         }
 
         final DungeonTemplate template = DungeonData.getInstance().getDungeon(dungeonId);
@@ -813,6 +867,7 @@ public final class KamalokaInstancia implements L2JExtension, OnBypassCommandLis
         }
     }
 
+    
     /**
      * Classe interna que representa a instância Kamaloka, herdando de Dungeon.
      */
