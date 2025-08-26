@@ -24,7 +24,6 @@ import ext.mods.gameserver.enums.SayType;
 import ext.mods.gameserver.network.serverpackets.NpcHtmlMessage;
 import ext.mods.gameserver.model.actor.template.CreatureTemplate;
 import ext.mods.gameserver.skills.L2Skill;
-import mods.dhousefe.kamaloka.Config;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -104,12 +103,12 @@ public final class KamalokaInstancia implements L2JExtension, OnBypassCommandLis
             } catch (NoSuchFieldException | IllegalAccessException e) {
                 LOGGER.error("Nao foi possivel acessar o campo _level via reflection.", e);
             }
-            this.level = tempLevel;
-            this.baseHpMax = template._baseHpMax;
-            this.basePDef = template._basePDef;
-            this.baseMDef = template._baseMDef;
-            this.basePAtk = template._basePAtk;
-            this.baseMAtk = template._baseMAtk;
+            OriginalStats.level = tempLevel;
+            OriginalStats.baseHpMax = template._baseHpMax;
+            OriginalStats.basePDef = template._basePDef;
+            OriginalStats.baseMDef = template._baseMDef;
+            OriginalStats.basePAtk = template._basePAtk;
+            OriginalStats.baseMAtk = template._baseMAtk;
         }
 
 
@@ -304,12 +303,12 @@ public final class KamalokaInstancia implements L2JExtension, OnBypassCommandLis
         }
 
         try {
-            setNpcLevel(template, original.level);
-            template._baseHpMax = original.baseHpMax;
-            template._basePDef = original.basePDef;
-            template._baseMDef = original.baseMDef;
-            template._basePAtk = original.basePAtk;
-            template._baseMAtk = original.baseMAtk;
+            setNpcLevel(template, OriginalStats.level);
+            template._baseHpMax = OriginalStats.baseHpMax;
+            template._basePDef = OriginalStats.basePDef;
+            template._baseMDef = OriginalStats.baseMDef;
+            template._basePAtk = OriginalStats.basePAtk;
+            template._baseMAtk = OriginalStats.baseMAtk;
         } catch (Exception e) {
             LOGGER.error("[" + getName() + "] Falha ao resetar template para o original: NPC ID " + template.getNpcId(), e);
         }
@@ -341,8 +340,8 @@ public final class KamalokaInstancia implements L2JExtension, OnBypassCommandLis
                     if (isNormalMonster) {
                         OriginalStats stats = _originalNpcStatsCache.get(spawn.npcId);
                         if (stats != null) {
-                            if (stats.baseHpMax < minHp) {
-                                minHp = stats.baseHpMax;
+                            if (OriginalStats.baseHpMax < minHp) {
+                                minHp = OriginalStats.baseHpMax;
                             }
                             monsterFound = true;
                         }
@@ -788,9 +787,7 @@ public final class KamalokaInstancia implements L2JExtension, OnBypassCommandLis
             
         }
 
-        protected void beginTeleport() {
-            // Sobrescreve o método para evitar que a lógica da classe pai (que depende do template) seja executada.
-        }
+       
 
         
         public void onBossKill(Player killer) {
@@ -862,11 +859,6 @@ public final class KamalokaInstancia implements L2JExtension, OnBypassCommandLis
             cleanupDungeon(true);
         }
 
-        private void cancelFuture(AtomicReference<ScheduledFuture<?>> futureRef) {
-            ScheduledFuture<?> future = futureRef.getAndSet(null);
-            if (future != null && !future.isDone()) {
-                future.cancel(true);
-            }
-        }
+        
     }
 }
