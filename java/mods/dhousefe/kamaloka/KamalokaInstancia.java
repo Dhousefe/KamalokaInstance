@@ -1,37 +1,27 @@
 package mods.dhousefe.kamaloka;
 
 import ext.mods.InstanceMap.InstanceManager;
-//import ext.mods.InstanceMap.MapInstance;
 import ext.mods.commons.logging.CLogger;
 import ext.mods.dungeon.Dungeon;
 import ext.mods.dungeon.DungeonManager;
 import ext.mods.dungeon.DungeonTemplate;
 import ext.mods.dungeon.data.DungeonData;
-//import ext.mods.dungeon.enums.DungeonType;
 import ext.mods.dungeon.holder.SpawnTemplate;
 import ext.mods.extensions.interfaces.L2JExtension;
-//import ext.mods.extensions.listener.OnKillListener;
 import ext.mods.extensions.listener.command.OnBypassCommandListener;
 import ext.mods.extensions.listener.manager.BypassCommandManager;
-//import ext.mods.extensions.listener.manager.CreatureListenerManager;
-//import ext.mods.extensions.listener.manager.NpcListenerManager;
-//import ext.mods.extensions.listener.manager.PlayerListenerManager;
 import ext.mods.extensions.listener.actor.npc.OnInteractListener;
 import ext.mods.gameserver.data.SkillTable;
 import ext.mods.gameserver.data.xml.NpcData;
 import ext.mods.gameserver.model.actor.template.NpcTemplate;
-//import ext.mods.gameserver.enums.MessageType;
 import ext.mods.gameserver.model.group.Party;
 import ext.mods.gameserver.model.actor.Creature;
 import ext.mods.gameserver.model.actor.Npc;
 import ext.mods.gameserver.model.actor.Player;
 import ext.mods.gameserver.model.location.Location;
-//import ext.mods.gameserver.model.location.SpawnLocation;
-//import ext.mods.gameserver.model.spawn.Spawn;
 import ext.mods.gameserver.network.serverpackets.CreatureSay;
 import ext.mods.gameserver.enums.SayType;
 import ext.mods.gameserver.network.serverpackets.NpcHtmlMessage;
-//import ext.mods.commons.data.StatSet; 
 import ext.mods.gameserver.model.actor.template.CreatureTemplate;
 import ext.mods.gameserver.skills.L2Skill;
 import mods.dhousefe.kamaloka.Config;
@@ -49,7 +39,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.lang.reflect.Field;
@@ -121,61 +110,6 @@ public final class KamalokaInstancia implements L2JExtension, OnBypassCommandLis
             this.baseMDef = template._baseMDef;
             this.basePAtk = template._basePAtk;
             this.baseMAtk = template._baseMAtk;
-        }
-
-        public static Object getbaseHpMax() {
-            return baseHpMax;
-        }
-
-        public static Object getbasePDef() {
-            return basePDef;
-        }
-
-        public static Object getbaseMDef() {
-            return baseMDef;
-        }
-
-        public static Object getbasePAtk() {
-            return basePAtk;
-        }
-
-        public static Object  getbaseMAtk() {
-            return baseMAtk;
-        }
-
-        public static Object getLevel() {
-            return level;
-
-        }
-            
-        public static Object setLevel(byte level) {
-            level = OriginalStats.level;
-            return level;
-        }
-        
-        public static Object setbaseHpMax(double baseHpMax) {
-            baseHpMax = OriginalStats.baseHpMax;
-            return baseHpMax;
-        }
-
-        public static Object setbasePDef(double baseHpMax) {
-            baseHpMax = OriginalStats.baseHpMax;
-            return baseHpMax;
-        }
-
-        public static Object setbaseMDef(double baseHpMax) {
-            baseHpMax = OriginalStats.baseHpMax;
-            return baseHpMax;
-        }
-
-        public static Object setbasePAtk(double baseHpMax) {
-            baseHpMax = OriginalStats.baseHpMax;
-            return baseHpMax;
-        }
-
-        public static Object setbaseMAtk(double baseHpMax) {
-            baseHpMax = OriginalStats.baseHpMax;
-            return baseHpMax;
         }
 
 
