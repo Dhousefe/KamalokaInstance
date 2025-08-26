@@ -362,7 +362,7 @@ public final class KamalokaInstancia implements L2JExtension, OnBypassCommandLis
                     // 1. RESTAURA o template para os valores originais do cache
                     resetTemplateToOriginal(template);
 
-                    // 2. APLICA as modificacoes
+                    
                     try {
                         boolean isMonster = "[Kamaloka Monster]".equals(spawn.title);
                         boolean isMonsterParty = "[Kamaloka Party]".equals(spawn.title);
