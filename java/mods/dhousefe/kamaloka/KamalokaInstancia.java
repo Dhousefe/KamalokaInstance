@@ -81,7 +81,7 @@ public final class KamalokaInstancia implements L2JExtension, OnBypassCommandLis
 
     // --- Estado do Manager ---
     private static final AtomicBoolean allowRepeat = new AtomicBoolean(true);
-    private final ConcurrentHashMap<Integer, Long> _playerEntryTimes = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Integer, List<Long>> _playerEntryTimes = new ConcurrentHashMap<>();
 
     private final ConcurrentHashMap<Integer, KamalokaDungeon> _dungeons = new ConcurrentHashMap<>();
     // --- Cache de Status Originais ---
@@ -99,12 +99,12 @@ public final class KamalokaInstancia implements L2JExtension, OnBypassCommandLis
      * Classe interna para armazenar os status originais de um NpcTemplate.
      */
     private static class OriginalStats {
-        final byte level;
-        final double baseHpMax;
-        final double basePDef;
-        final double baseMDef;
-        final double basePAtk;
-        final double baseMAtk;
+        static byte level = 0;
+        static double baseHpMax = 0;
+        static double basePDef = 0;
+        static double baseMDef = 0;
+        static double basePAtk = 0;
+        static double baseMAtk = 0;
 
         OriginalStats(NpcTemplate template) {
             byte tempLevel = 0;
@@ -122,6 +122,63 @@ public final class KamalokaInstancia implements L2JExtension, OnBypassCommandLis
             this.basePAtk = template._basePAtk;
             this.baseMAtk = template._baseMAtk;
         }
+
+        public static Object getbaseHpMax() {
+            return baseHpMax;
+        }
+
+        public static Object getbasePDef() {
+            return basePDef;
+        }
+
+        public static Object getbaseMDef() {
+            return baseMDef;
+        }
+
+        public static Object getbasePAtk() {
+            return basePAtk;
+        }
+
+        public static Object  getbaseMAtk() {
+            return baseMAtk;
+        }
+
+        public static Object getLevel() {
+            return level;
+
+        }
+            
+        public static Object setLevel(byte level) {
+            level = OriginalStats.level;
+            return level;
+        }
+        
+        public static Object setbaseHpMax(double baseHpMax) {
+            baseHpMax = OriginalStats.baseHpMax;
+            return baseHpMax;
+        }
+
+        public static Object setbasePDef(double baseHpMax) {
+            baseHpMax = OriginalStats.baseHpMax;
+            return baseHpMax;
+        }
+
+        public static Object setbaseMDef(double baseHpMax) {
+            baseHpMax = OriginalStats.baseHpMax;
+            return baseHpMax;
+        }
+
+        public static Object setbasePAtk(double baseHpMax) {
+            baseHpMax = OriginalStats.baseHpMax;
+            return baseHpMax;
+        }
+
+        public static Object setbaseMAtk(double baseHpMax) {
+            baseHpMax = OriginalStats.baseHpMax;
+            return baseHpMax;
+        }
+
+
     }
 
     public static KamalokaInstancia getInstance() {
@@ -383,6 +440,7 @@ public final class KamalokaInstancia implements L2JExtension, OnBypassCommandLis
                             template._baseHpMax *= Config.SOLO_MONSTER_HP_MULTIPLIER;
                             template._basePDef *= Config.SOLO_MONSTER_PDEF_MULTIPLIER;
                             template._baseMDef *= Config.SOLO_MONSTER_MDEF_MULTIPLIER;
+                            
                             if (monsterFound) {
                                 setNpcHp(template, minHp * Config.SOLO_MONSTER_MIN_HP_MULTIPLIER);
                             }
@@ -604,11 +662,20 @@ public final class KamalokaInstancia implements L2JExtension, OnBypassCommandLis
         }
 
         if (!allowRepeat.get()) {
-            long lastEntry = _playerEntryTimes.getOrDefault(player.getObjectId(), 0L);
-            if (isToday(lastEntry)) {
+            List<Long> entryTimes = _playerEntryTimes.getOrDefault(player.getObjectId(), new ArrayList<>());
+            
+            // Filtra para manter apenas as entradas de hoje
+            List<Long> todayEntries = entryTimes.stream()
+                .filter(this::isToday)
+                .collect(Collectors.toList());
+
+            if (todayEntries.size() >= Config.MAX_DAILY_ENTRIES) { // Usa a nova configuração
                 showHtml(player, "322-daily-limit.htm");
                 return;
             }
+            
+            // Atualiza a lista de entradas
+            _playerEntryTimes.put(player.getObjectId(), todayEntries);
         }
 
         int dungeonId;
@@ -646,7 +713,10 @@ public final class KamalokaInstancia implements L2JExtension, OnBypassCommandLis
 
         try {
             long currentTime = System.currentTimeMillis();
-            participants.forEach(p -> _playerEntryTimes.put(p.getObjectId(), currentTime));
+            participants.forEach(p -> {
+                List<Long> entryTimes = _playerEntryTimes.computeIfAbsent(p.getObjectId(), k -> new ArrayList<>());
+                entryTimes.add(currentTime);
+            });
             //modifyDungeonSpawns();
             KamalokaDungeon dungeon = new KamalokaDungeon(template, participants);
             _dungeons.put(dungeon.getInstanceId(), dungeon);
@@ -665,6 +735,7 @@ public final class KamalokaInstancia implements L2JExtension, OnBypassCommandLis
                 if (in == null) {
                     throw new IOException("Recurso não encontrado no JAR: " + resourcePath);
                 }
+
                 in.transferTo(out);
                 LOGGER.info("[" + getName() + "] Arquivo de configuração padrão criado: " + destinationPath);
             }
@@ -782,8 +853,6 @@ public final class KamalokaInstancia implements L2JExtension, OnBypassCommandLis
             _dungeonName = template.name;
             
         }
-
-
 
         protected void beginTeleport() {
             // Sobrescreve o método para evitar que a lógica da classe pai (que depende do template) seja executada.
