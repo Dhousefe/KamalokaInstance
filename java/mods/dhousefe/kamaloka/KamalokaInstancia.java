@@ -813,7 +813,7 @@ public final class KamalokaInstancia implements L2JExtension, OnBypassCommandLis
         }
 
         private void rewardPlayer(Player player) {
-            player.addItem(Config.REWARD_ITEM_ID, Config.REWARD_ITEM_COUNT, true);
+            player.addItem(Config.REWARD_ITEM_ID, (int)Config.REWARD_ITEM_COUNT, true);
         }
 
         
