@@ -62,15 +62,15 @@ public final class Config {
         REWARD_ITEM_COUNT = getLong(props, "RewardItemCount", 15);
 
         // Monstros Solo
-        SOLO_MONSTER_LEVEL_BONUS = getInt(props, "SoloMonsterLevelBonus", 15);
-        SOLO_MONSTER_HP_MULTIPLIER = getDouble(props, "SoloMonsterHpMultiplier", 1.9);
-        SOLO_MONSTER_PDEF_MULTIPLIER = getDouble(props, "SoloMonsterPdefMultiplier", 1 / 1.1);
-        SOLO_MONSTER_MIN_HP_MULTIPLIER = getDouble(props, "SoloMonsterMinHpMultiplier", 4.0);
+        SOLO_MONSTER_LEVEL_BONUS = getInt(props, "SoloMonsterLevelBonus", 5);
+        SOLO_MONSTER_HP_MULTIPLIER = getDouble(props, "SoloMonsterHpMultiplier", 2.2);
+        SOLO_MONSTER_PDEF_MULTIPLIER = getDouble(props, "SoloMonsterPdefMultiplier", 1 / 1.8);
+        SOLO_MONSTER_MIN_HP_MULTIPLIER = getDouble(props, "SoloMonsterMinHpMultiplier", 2.0);
         SOLO_MONSTER_MDEF_MULTIPLIER = getDouble(props, "SoloMonsterMdefMultiplier", 1.8);
 
         // Monstros Party
-        PARTY_MONSTER_LEVEL_BONUS = getInt(props, "PartyMonsterLevelBonus", 7);
-        PARTY_MONSTER_HP_MULTIPLIER = getDouble(props, "PartyMonsterHpMultiplier", 1.9);
+        PARTY_MONSTER_LEVEL_BONUS = getInt(props, "PartyMonsterLevelBonus", 1);
+        PARTY_MONSTER_HP_MULTIPLIER = getDouble(props, "PartyMonsterHpMultiplier", 4.9);
         PARTY_MONSTER_PDEF_MULTIPLIER = getDouble(props, "PartyMonsterPdefMultiplier", 1.2);
         PARTY_MONSTER_MDEF_MULTIPLIER = getDouble(props, "PartyMonsterMdefMultiplier", 1.2);
         PARTY_MONSTER_MIN_HP_MULTIPLIER = getDouble(props, "PartyMonsterMinHpMultiplier", 8.0);
@@ -85,7 +85,7 @@ public final class Config {
         PARTY_RAID_PATK_MULTIPLIER = getDouble(props, "PartyRaidPatkMultiplier", 1.0 / 4.0);
         PARTY_RAID_MATK_MULTIPLIER = getDouble(props, "PartyRaidMatkMultiplier", 1.0 / 4.0);
         PARTY_RAID_MDEF_MULTIPLIER = getDouble(props, "PartyRaidMdefMultiplier", 1.0 / 2.0);
-        PARTY_RAID_PDEF_MULTIPLIER = getDouble(props, "PartyRaidPdefMultiplier", 1.0 / 1.5); // Adicionado valor padrão
+        PARTY_RAID_PDEF_MULTIPLIER = getDouble(props, "PartyRaidPdefMultiplier", 1.0 / 1.5); 
         MAX_DAILY_ENTRIES = getInt(props, "MaxDailyEntries", 2);
 
         LOGGER.info("[KamalokaInstancia] Configuracoes de Kamaloka carregadas recarregadas com sucesso.");

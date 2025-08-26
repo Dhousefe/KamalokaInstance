@@ -87,31 +87,30 @@ public final class KamalokaInstancia implements L2JExtension, OnBypassCommandLis
      * Classe interna para armazenar os status originais de um NpcTemplate.
      */
     private static class OriginalStats {
-        static byte level = 0;
-        static double baseHpMax = 0;
-        static double basePDef = 0;
-        static double baseMDef = 0;
-        static double basePAtk = 0;
-        static double baseMAtk = 0;
+    private final byte level;
+    private final double baseHpMax;
+    private final double basePDef;
+    private final double baseMDef;
+    private final double basePAtk;
+    private final double baseMAtk;
 
-        OriginalStats(NpcTemplate template) {
-            byte tempLevel = 0;
-            try {
-                Field levelField = NpcTemplate.class.getDeclaredField("_level");
-                levelField.setAccessible(true);
-                tempLevel = levelField.getByte(template);
-            } catch (NoSuchFieldException | IllegalAccessException e) {
-                LOGGER.error("Nao foi possivel acessar o campo _level via reflection.", e);
-            }
-            OriginalStats.level = tempLevel;
-            OriginalStats.baseHpMax = template._baseHpMax;
-            OriginalStats.basePDef = template._basePDef;
-            OriginalStats.baseMDef = template._baseMDef;
-            OriginalStats.basePAtk = template._basePAtk;
-            OriginalStats.baseMAtk = template._baseMAtk;
+    public OriginalStats(NpcTemplate template) {
+        byte tempLevel = 0;
+        try {
+            Field levelField = NpcTemplate.class.getDeclaredField("_level");
+            levelField.setAccessible(true);
+            tempLevel = levelField.getByte(template);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            LOGGER.error("Nao foi possivel acessar o campo _level via reflection.", e);
         }
-
-
+        
+        this.level = tempLevel;
+        this.baseHpMax = template._baseHpMax;
+        this.basePDef = template._basePDef;
+        this.baseMDef = template._baseMDef;
+        this.basePAtk = template._basePAtk;
+        this.baseMAtk = template._baseMAtk;
+    }
     }
 
     public static KamalokaInstancia getInstance() {
@@ -296,112 +295,108 @@ public final class KamalokaInstancia implements L2JExtension, OnBypassCommandLis
      * @param template O NpcTemplate a ser restaurado.
      */
     private void resetTemplateToOriginal(NpcTemplate template) {
-        OriginalStats original = _originalNpcStatsCache.get(template.getNpcId());
-        if (original == null) {
-            LOGGER.warn("[" + getName() + "] Nao foi possivel encontrar status originais no cache para o NPC ID: " + template.getNpcId());
-            return;
-        }
+    OriginalStats original = _originalNpcStatsCache.get(template.getNpcId());
+    if (original == null) {
+        LOGGER.warn("[" + getName() + "] Nao foi possivel encontrar status originais no cache para o NPC ID: " + template.getNpcId());
+        return;
+    }
 
-        try {
-            setNpcLevel(template, OriginalStats.level);
-            template._baseHpMax = OriginalStats.baseHpMax;
-            template._basePDef = OriginalStats.basePDef;
-            template._baseMDef = OriginalStats.baseMDef;
-            template._basePAtk = OriginalStats.basePAtk;
-            template._baseMAtk = OriginalStats.baseMAtk;
-        } catch (Exception e) {
-            LOGGER.error("[" + getName() + "] Falha ao resetar template para o original: NPC ID " + template.getNpcId(), e);
-        }
+    try {
+        setNpcLevel(template, original.level);
+        template._baseHpMax = original.baseHpMax;
+        template._basePDef = original.basePDef;
+        template._baseMDef = original.baseMDef;
+        template._basePAtk = original.basePAtk;
+        template._baseMAtk = original.baseMAtk;
+    } catch (Exception e) {
+        LOGGER.error("[" + getName() + "] Falha ao resetar template para o original: NPC ID " + template.getNpcId(), e);
+    }
     }
 
     
 
     private void modifyDungeonSpawns() {
-        List<Integer> dungeonIds = new ArrayList<>();
-        for (int level = 20; level <= 80; level += 5) {
-            int soloId = getSoloDungeonIdForLevel(level);
-            if (soloId != -1) dungeonIds.add(soloId);
-            
-            int partyId = getPartyDungeonIdForLevel(level);
-            if (partyId != -1) dungeonIds.add(partyId);
-        }
+    List<Integer> dungeonIds = new ArrayList<>();
+    for (int level = 20; level <= 80; level += 5) {
+        int soloId = getSoloDungeonIdForLevel(level);
+        if (soloId != -1) dungeonIds.add(soloId);
+        
+        int partyId = getPartyDungeonIdForLevel(level);
+        if (partyId != -1) dungeonIds.add(partyId);
+    }
 
-        for (int dungeonId : dungeonIds) {
-            DungeonTemplate dungeonTemplate = DungeonData.getInstance().getDungeon(dungeonId);
-            if (dungeonTemplate == null) continue;
+    for (int dungeonId : dungeonIds) {
+        DungeonTemplate dungeonTemplate = DungeonData.getInstance().getDungeon(dungeonId);
+        if (dungeonTemplate == null) continue;
 
-            double minHp = Double.MAX_VALUE;
-            boolean monsterFound = false;
+        int baseLevel = getBaseLevelForDungeon(dungeonId);
+        if (baseLevel == 0) continue;
 
-            // Passada para encontrar o HP minimo (usando os valores originais do cache)
-            for (List<SpawnTemplate> spawnList : dungeonTemplate.spawns.values()) {
-                for (SpawnTemplate spawn : spawnList) {
-                    boolean isNormalMonster = "[Kamaloka Monster]".equals(spawn.title) || "[Kamaloka Party]".equals(spawn.title);
-                    if (isNormalMonster) {
-                        OriginalStats stats = _originalNpcStatsCache.get(spawn.npcId);
-                        if (stats != null) {
-                            if (OriginalStats.baseHpMax < minHp) {
-                                minHp = OriginalStats.baseHpMax;
-                            }
-                            monsterFound = true;
-                        }
+        // Calcula o HP e Nível de referência com base na dungeon, não em um monstro específico.
+        // Isso garante que todos os monstros normais tenham stats iguais.
+        double soloReferenceHp = 0;
+        int soloReferenceLevel = 0;
+        double partyReferenceHp = 0;
+        int partyReferenceLevel = 0;
+        
+        // Encontra um monstro de cada tipo (solo/party) para usar como base de cálculo
+        for (List<SpawnTemplate> spawnList : dungeonTemplate.spawns.values()) {
+            for (SpawnTemplate spawn : spawnList) {
+                if ("[Kamaloka Monster]".equals(spawn.title)) {
+                    OriginalStats stats = _originalNpcStatsCache.get(spawn.npcId);
+                    if (stats != null) {
+                        soloReferenceLevel = baseLevel + Config.SOLO_MONSTER_LEVEL_BONUS;
+                        soloReferenceHp = stats.baseHpMax * Config.SOLO_MONSTER_HP_MULTIPLIER;
+                    }
+                }
+                if ("[Kamaloka Party]".equals(spawn.title)) {
+                    OriginalStats stats = _originalNpcStatsCache.get(spawn.npcId);
+                    if (stats != null) {
+                        partyReferenceLevel = baseLevel + Config.PARTY_MONSTER_LEVEL_BONUS;
+                        partyReferenceHp = stats.baseHpMax * Config.PARTY_MONSTER_HP_MULTIPLIER;
                     }
                 }
             }
+        }
 
-            int baseLevel = getBaseLevelForDungeon(dungeonId);
-            if (baseLevel == 0) continue;
-            
-            // Passada para restaurar e aplicar os status
-            for (List<SpawnTemplate> spawnList : dungeonTemplate.spawns.values()) {
-                for (SpawnTemplate spawn : spawnList) {
-                    NpcTemplate template = NpcData.getInstance().getTemplate(spawn.npcId);
-                    if (template == null) continue;
+        // Passagem única para restaurar e aplicar os status
+        for (List<SpawnTemplate> spawnList : dungeonTemplate.spawns.values()) {
+            for (SpawnTemplate spawn : spawnList) {
+                NpcTemplate template = NpcData.getInstance().getTemplate(spawn.npcId);
+                if (template == null) continue;
 
-                    // 1. RESTAURA o template para os valores originais do cache
-                    resetTemplateToOriginal(template);
+                // 1. RESTAURA o template para os valores originais do cache
+                resetTemplateToOriginal(template);
 
-                    
-                    try {
-                        boolean isMonster = "[Kamaloka Monster]".equals(spawn.title);
-                        boolean isMonsterParty = "[Kamaloka Party]".equals(spawn.title);
-                        boolean isRaid = "[Kamaloka Raid]".equals(spawn.title);
-                        boolean isRaidParty = "[Kamaloka Raid Party]".equals(spawn.title);
-
-                        if (isMonster) {
-                            setNpcLevel(template, (byte)(baseLevel + Config.SOLO_MONSTER_LEVEL_BONUS));
-                            template._baseHpMax *= Config.SOLO_MONSTER_HP_MULTIPLIER;
-                            template._basePDef *= Config.SOLO_MONSTER_PDEF_MULTIPLIER;
-                            template._baseMDef *= Config.SOLO_MONSTER_MDEF_MULTIPLIER;
-                            
-                            if (monsterFound) {
-                                setNpcHp(template, minHp * Config.SOLO_MONSTER_MIN_HP_MULTIPLIER);
-                            }
-                        } else if (isMonsterParty) {
-                            setNpcLevel(template, (byte)(baseLevel + Config.PARTY_MONSTER_LEVEL_BONUS));
-                            template._baseHpMax *= Config.PARTY_MONSTER_HP_MULTIPLIER;
-                            template._basePDef *= Config.PARTY_MONSTER_PDEF_MULTIPLIER;
-                            template._baseMDef *= Config.PARTY_MONSTER_MDEF_MULTIPLIER;
-                            if (monsterFound) {
-                                setNpcHp(template, minHp * Config.PARTY_MONSTER_MIN_HP_MULTIPLIER);
-                            }
-                        } else if (isRaid) {
-                            template._basePAtk *= Config.SOLO_RAID_PATK_MULTIPLIER;
-                            template._baseMAtk *= Config.SOLO_RAID_MATK_MULTIPLIER;
-                            template._baseMDef *= Config.SOLO_RAID_MDEF_MULTIPLIER;
-                            template._basePDef *= Config.SOLO_RAID_PDEF_MULTIPLIER;
-                        } else if (isRaidParty) {
-                            template._basePAtk *= Config.PARTY_RAID_PATK_MULTIPLIER;
-                            template._baseMAtk *= Config.PARTY_RAID_MATK_MULTIPLIER;
-                            template._baseMDef *= Config.PARTY_RAID_MDEF_MULTIPLIER;
-                        }
-                    } catch (Exception e) {
-                        LOGGER.error("[" + getName() + "] Falha ao modificar stats para NPC ID " + spawn.npcId, e);
+                try {
+                    if ("[Kamaloka Monster]".equals(spawn.title)) {
+                        setNpcLevel(template, (byte) soloReferenceLevel);
+                        setNpcHp(template, soloReferenceHp);
+                        template._basePDef *= Config.SOLO_MONSTER_PDEF_MULTIPLIER;
+                        template._baseMDef *= Config.SOLO_MONSTER_MDEF_MULTIPLIER;
+                    } else if ("[Kamaloka Party]".equals(spawn.title)) {
+                        setNpcLevel(template, (byte) partyReferenceLevel);
+                        setNpcHp(template, partyReferenceHp);
+                        template._basePDef *= Config.PARTY_MONSTER_PDEF_MULTIPLIER;
+                        template._baseMDef *= Config.PARTY_MONSTER_MDEF_MULTIPLIER;
+                    } else if ("[Kamaloka Raid]".equals(spawn.title)) {
+                        template._basePAtk *= Config.SOLO_RAID_PATK_MULTIPLIER;
+                        template._baseMAtk *= Config.SOLO_RAID_MATK_MULTIPLIER;
+                        template._baseMDef *= Config.SOLO_RAID_MDEF_MULTIPLIER;
+                        template._basePDef *= Config.SOLO_RAID_PDEF_MULTIPLIER;
+                    } else if ("[Kamaloka Raid Party]".equals(spawn.title)) {
+                        template._basePAtk *= Config.PARTY_RAID_PATK_MULTIPLIER;
+                        template._baseMAtk *= Config.PARTY_RAID_MATK_MULTIPLIER;
+                        template._baseMDef *= Config.PARTY_RAID_MDEF_MULTIPLIER;
+                        template._basePDef *= Config.PARTY_RAID_PDEF_MULTIPLIER;
                     }
+                } catch (Exception e) {
+                    LOGGER.error("[" + getName() + "] Falha ao modificar stats para NPC ID " + spawn.npcId, e);
                 }
             }
         }
     }
+}
 
     // --- Metodos auxiliares para Reflection ---
     private void setNpcLevel(NpcTemplate template, byte level) throws NoSuchFieldException, IllegalAccessException {
@@ -650,7 +645,7 @@ public final class KamalokaInstancia implements L2JExtension, OnBypassCommandLis
                 List<Long> entryTimes = _playerEntryTimes.computeIfAbsent(p.getObjectId(), k -> new ArrayList<>());
                 entryTimes.add(currentTime);
             });
-            //modifyDungeonSpawns();
+            modifyDungeonSpawns();
             KamalokaDungeon dungeon = new KamalokaDungeon(template, participants);
             _dungeons.put(dungeon.getInstanceId(), dungeon);
             //if (isSolo) {player.getParty().disband();}
@@ -780,7 +775,7 @@ public final class KamalokaInstancia implements L2JExtension, OnBypassCommandLis
         //private final MapInstance _instance;
         private final int _instanceId = INSTANCE_NAME.hashCode() ^ System.identityHashCode(this);
         private final String _dungeonName;
-
+        
         public KamalokaDungeon(DungeonTemplate template, List<Player> players) {
             super(template, players); // Agora usa o template carregado do XML
             _dungeonName = template.name;
