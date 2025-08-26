@@ -59,11 +59,11 @@ public final class Config {
         REWARD_ITEM_COUNT = getInt("RewardItemCount", 15);
 
         // Monstros Solo
-        SOLO_MONSTER_LEVEL_BONUS = getInt("SoloMonsterLevelBonus", 5);
-        SOLO_MONSTER_HP_MULTIPLIER = getDouble("SoloMonsterHpMultiplier", 1.4);
+        SOLO_MONSTER_LEVEL_BONUS = getInt("SoloMonsterLevelBonus", 15);
+        SOLO_MONSTER_HP_MULTIPLIER = getDouble("SoloMonsterHpMultiplier", 1.9);
         SOLO_MONSTER_PDEF_MULTIPLIER = getDouble("SoloMonsterPdefMultiplier", 1 / 1.1);
-        SOLO_MONSTER_MIN_HP_MULTIPLIER = getDouble("SoloMonsterMinHpMultiplier", 3.0);
-        SOLO_MONSTER_MDEF_MULTIPLIER = getDouble("SoloMonsterMdefMultiplier", 1.1);
+        SOLO_MONSTER_MIN_HP_MULTIPLIER = getDouble("SoloMonsterMinHpMultiplier", 4.0);
+        SOLO_MONSTER_MDEF_MULTIPLIER = getDouble("SoloMonsterMdefMultiplier", 1.8);
 
         // Monstros Party
         PARTY_MONSTER_LEVEL_BONUS = getInt("PartyMonsterLevelBonus", 7);
