@@ -1,2 +1,2 @@
-# L2JBASE_MOD_TUTORIAL
+# L2J BrProject Kamaloka Instance
 
