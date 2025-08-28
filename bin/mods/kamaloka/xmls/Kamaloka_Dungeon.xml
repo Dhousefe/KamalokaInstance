@@ -60,8 +60,8 @@
 			<spawn npcId="20160" title="[Kamaloka Monster]" count="1" range="75" loc="-77562,-186061,-10992" drops="4037-1-1-500000;" />
 			<spawn npcId="20930" title="[Kamaloka Monster]" count="1" range="75" loc="-77984,-186057,-10992" drops="4037-1-1-500000;" />
 			<spawn npcId="20929" title="[Kamaloka Monster]" count="1" range="75" loc="-78198,-185844,-10992" drops="4037-1-1-500000;" />
-			<spawn npcId="20793" title="[Kamaloka Monster]" count="1" range="75" loc="-78201,-185175,-10992" drops="4037-1-1-500000;" />
-			<spawn npcId="20989" title="[Kamaloka Monster]" count="1" range="75" loc="-77994,-184962,-10992" drops="4037-1-1-500000;" />
+			-<spawn npcId="20793" title="[Kamaloka Monster]" count="1" range="75" loc="-78201,-185175,-10992" drops="4037-1-1-500000;" />
+			-<spawn npcId="20989" title="[Kamaloka Monster]" count="1" range="75" loc="-77994,-184962,-10992" drops="4037-1-1-500000;" />
 			<spawn npcId="20227" title="[Kamaloka Monster]" count="1" range="75" loc="-77565,-184960,-10992" drops="4037-1-1-500000;" />
 			<spawn npcId="20157" title="[Kamaloka Monster]" count="1" range="75" loc="-77349,-185173,-10992" drops="4037-1-1-500000;" />
 		</spawns>

@@ -86,6 +86,7 @@ public final class Config {
         PARTY_RAID_MATK_MULTIPLIER = getDouble(props, "PartyRaidMatkMultiplier", 1.0 / 4.0);
         PARTY_RAID_MDEF_MULTIPLIER = getDouble(props, "PartyRaidMdefMultiplier", 1.0 / 2.0);
         PARTY_RAID_PDEF_MULTIPLIER = getDouble(props, "PartyRaidPdefMultiplier", 1.0 / 1.5); 
+        
         MAX_DAILY_ENTRIES = getInt(props, "MaxDailyEntries", 2);
 
         LOGGER.info("[KamalokaInstancia] Configuracoes de Kamaloka carregadas recarregadas com sucesso.");
