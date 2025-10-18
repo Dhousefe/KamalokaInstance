@@ -24,6 +24,9 @@ import ext.mods.gameserver.enums.SayType;
 import ext.mods.gameserver.network.serverpackets.NpcHtmlMessage;
 import ext.mods.gameserver.model.actor.template.CreatureTemplate;
 import ext.mods.gameserver.skills.L2Skill;
+import ext.mods.gameserver.data.xml.SysString;
+import ext.mods.gameserver.enums.ZoneId;
+import java.util.Locale;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -118,6 +121,20 @@ public final class KamalokaInstancia implements L2JExtension, OnBypassCommandLis
 
     public static KamalokaInstancia getInstance() {
         return SingletonHolder.INSTANCE;
+    }
+
+    /**
+     * Obtém uma string localizada do sistema de locale.
+     * @param player O jogador para obter o locale
+     * @param key A chave da string no sysstring.xml
+     * @return A string localizada
+     */
+    private String getLocalizedString(Player player, String key) {
+        Locale locale = player.getLocale();
+        if (locale == null) {
+            locale = Locale.ENGLISH; // Fallback para inglês
+        }
+        return SysString.getInstance().get(locale, key);
     }
 
     @Override
@@ -369,31 +386,31 @@ private void modifyDungeonSpawns() {
                     try {
                         if ("[Kamaloka Monster]".equals(spawn.title) && soloReferenceHp > 0) {
                             // Seta o nivel e HP para os valores de referencia.
-                            setNpcLevel(template, (byte) soloReferenceLevel);
-                            setNpcHp(template, soloReferenceHp);
+                            //setNpcLevel(template, (byte) soloReferenceLevel);
+                            //setNpcHp(template, soloReferenceHp);
                             
                             // Aplica os outros multiplicadores.
-                            template._basePDef *= Config.SOLO_MONSTER_PDEF_MULTIPLIER;
-                            template._baseMDef *= Config.SOLO_MONSTER_MDEF_MULTIPLIER;
+                            //template._basePDef *= Config.SOLO_MONSTER_PDEF_MULTIPLIER;
+                            //template._baseMDef *= Config.SOLO_MONSTER_MDEF_MULTIPLIER;
                         } else if ("[Kamaloka Party]".equals(spawn.title) && partyReferenceHp > 0) {
                             // Seta o nivel e HP para os valores de referencia.
-                            setNpcLevel(template, (byte) partyReferenceLevel);
-                            setNpcHp(template, partyReferenceHp);
+                            //setNpcLevel(template, (byte) partyReferenceLevel);
+                            //setNpcHp(template, partyReferenceHp);
                             
-                            template._basePDef *= Config.PARTY_MONSTER_PDEF_MULTIPLIER;
-                            template._baseMDef *= Config.PARTY_MONSTER_MDEF_MULTIPLIER;
+                            //template._basePDef *= Config.PARTY_MONSTER_PDEF_MULTIPLIER;
+                            //template._baseMDef *= Config.PARTY_MONSTER_MDEF_MULTIPLIER;
                         } else if ("[Kamaloka Raid]".equals(spawn.title)) {
                             // Apenas aplica os multiplicadores nos stats do Raid Boss.
-                            template._basePAtk *= Config.SOLO_RAID_PATK_MULTIPLIER;
-                            template._baseMAtk *= Config.SOLO_RAID_MATK_MULTIPLIER;
-                            template._baseMDef *= Config.SOLO_RAID_MDEF_MULTIPLIER;
-                            template._basePDef *= Config.SOLO_RAID_PDEF_MULTIPLIER;
+                            //template._basePAtk *= Config.SOLO_RAID_PATK_MULTIPLIER;
+                            //template._baseMAtk *= Config.SOLO_RAID_MATK_MULTIPLIER;
+                            //template._baseMDef *= Config.SOLO_RAID_MDEF_MULTIPLIER;
+                            //template._basePDef *= Config.SOLO_RAID_PDEF_MULTIPLIER;
                         } else if ("[Kamaloka Raid Party]".equals(spawn.title)) {
                             // Apenas aplica os multiplicadores nos stats do Raid Boss.
-                            template._basePAtk *= Config.PARTY_RAID_PATK_MULTIPLIER;
-                            template._baseMAtk *= Config.PARTY_RAID_MATK_MULTIPLIER;
-                            template._baseMDef *= Config.PARTY_RAID_MDEF_MULTIPLIER;
-                            template._basePDef *= Config.PARTY_RAID_PDEF_MULTIPLIER;
+                            //template._basePAtk *= Config.PARTY_RAID_PATK_MULTIPLIER;
+                            //template._baseMAtk *= Config.PARTY_RAID_MATK_MULTIPLIER;
+                            //template._baseMDef *= Config.PARTY_RAID_MDEF_MULTIPLIER;
+                            //template._basePDef *= Config.PARTY_RAID_PDEF_MULTIPLIER;
                         }
                     } catch (Exception e) {
                         LOGGER.error("[" + getName() + "] Falha ao modificar stats para NPC ID " + spawn.npcId, e);
@@ -432,12 +449,17 @@ private void modifyDungeonSpawns() {
             return -1; // Fora da faixa de níveis permitida
         }
         // Fórmula para mapear níveis para IDs (20-24 -> 10, 25-29 -> 11, etc.)
-        return 10 + ((level - 20) / 5);
+        // Nível 80+ é limitado à sala 21 (última sala solo)
+        int dungeonId = 10 + ((level - 20) / 5);
+        return Math.min(dungeonId, 21); // Limita ao máximo ID 21 para salas solo
     }
 
     private int getPartyDungeonIdForLevel(int level) {
         if (level < 20 || level > 80) return -1;
-        return 22 + ((level - 20) / 5);
+        // Fórmula para mapear níveis para IDs (20-24 -> 22, 25-29 -> 23, etc.)
+        // Nível 80+ é limitado à sala 33 (última sala party)
+        int dungeonId = 22 + ((level - 20) / 5);
+        return Math.min(dungeonId, 33); // Limita ao máximo ID 33 para salas party
     }
 
     private int getBaseLevelForDungeon(int dungeonId) {
@@ -451,13 +473,19 @@ private void modifyDungeonSpawns() {
 
 
     private void handleEnterInstance(Player player, boolean isSolo) {
-        // Lógica de canalização com verificação de combate
+        // Verifica se está em zona de paz - se sim, pula o scroll e vai direto
+        if (player.isInsideZone(ZoneId.PEACE)) {
+            player.sendMessage(getLocalizedString(player, "12040"));
+            proceedToInstance(Collections.singletonList(player), isSolo, null);
+            return;
+        }
         
+        // Lógica de canalização com verificação de combate
         try {
             final L2Skill channelingSkill = SkillTable.getInstance().getInfo(Config.CHANNELING_SKILL_ID, 1);
             if (channelingSkill == null) {
                 LOGGER.warn("[" + getName() + "] Skill de canalização não encontrada: " + Config.CHANNELING_SKILL_ID);
-                player.sendMessage("Ocorreu um erro ao tentar entrar na instância.");
+                player.sendMessage(getLocalizedString(player, "12022"));
                 proceedToInstance(Collections.singletonList(player), isSolo, null);
                 return;
             }
@@ -473,7 +501,7 @@ private void modifyDungeonSpawns() {
                 player.getCast().doCast(channelingSkill, player, null);
                 participants = Collections.singletonList(player);
                 
-                player.sendMessage("Preparando para entrar na instância...");
+                player.sendMessage(getLocalizedString(player, "12014"));
                 //participants.forEach(p -> player.getCast().doCast(channelingSkill, player, null));
                 _executor.schedule(() -> proceedToInstance(participants, true, channelingSkill), castTime, TimeUnit.MILLISECONDS);
 
@@ -489,14 +517,14 @@ private void modifyDungeonSpawns() {
                 for (Player member : participants) {
                     
                     if (!checkPlayerRestrictions(member)) {
-                        party.broadcastToPartyMembers(player, new CreatureSay(0, SayType.PARTY, "Kamaloka Party", "Um membro da party (" + member.getName() + ") não cumpre os requisitos."));
+                        party.broadcastToPartyMembers(player, new CreatureSay(0, SayType.PARTY, "Kamaloka Party", getLocalizedString(player, "12016").replace("{name}", member.getName())));
                         return;
                     }
                     member.abortAll(true);
                 }
                 
                 // Inicia a canalização para todos os membros
-                party.broadcastToPartyMembers(player, new CreatureSay(0, SayType.PARTY, "Kamaloka Party", "Todos os membros devem permanecer parados para entrar na instância..."));
+                party.broadcastToPartyMembers(player, new CreatureSay(0, SayType.PARTY, "Kamaloka Party", getLocalizedString(player, "12015")));
                 participants.forEach(member -> member.getCast().doCast(channelingSkill, member, null));
                 
                 _executor.schedule(() -> proceedToInstance(participants, false, channelingSkill), castTime, TimeUnit.MILLISECONDS);
@@ -509,59 +537,105 @@ private void modifyDungeonSpawns() {
 
     private boolean checkPlayerRestrictions(Player player) {
         if (player.getDungeon() != null) {
-            player.sendMessage("Você já está em uma dungeon.");
+            player.sendMessage(getLocalizedString(player, "12000"));
             return false;
         }
                 
         // Verificações de restrição
         if (player.isInCombat()) {
-            player.sendMessage("Você não pode entrar enquanto estiver em combate.");
+            player.sendMessage(getLocalizedString(player, "12001"));
             return false;
         }
         if (player.isInOlympiadMode()) {
-            player.sendMessage("Você não pode entrar durante uma partida da Olympiad.");
+            player.sendMessage(getLocalizedString(player, "12002"));
             return false;
         }
         if (player.getPvpFlag() != 0) {
-            player.sendMessage("Você não pode entrar enquanto estiver em modo PvP.");
+            player.sendMessage(getLocalizedString(player, "12003"));
             return false;
         }
         if (player.isDead()) {
-            player.sendMessage("Você não pode usar isto morto");
+            player.sendMessage(getLocalizedString(player, "12004"));
             return false;
         }
         if (player.isFakeDeath()) {
-            player.sendMessage("Você não pode usar isto em FakeDeath");
+            player.sendMessage(getLocalizedString(player, "12005"));
             return false;
         }
         if (player.isFishing()) {
-            player.sendMessage("Você não pode usar isto pescando");
+            player.sendMessage(getLocalizedString(player, "12006"));
             return false;
         }
         if (player.isInDuel()) {
-            player.sendMessage("Você não pode usar isto em duelo");
+            player.sendMessage(getLocalizedString(player, "12007"));
             return false;
         }
         if (player.isInArena()) {
-            player.sendMessage("Você não pode usar isto em arena");
+            player.sendMessage(getLocalizedString(player, "12008"));
             return false;
         }
         if (player.isInJail()) {
-            player.sendMessage("Você não pode usar isto na Jail");
+            player.sendMessage(getLocalizedString(player, "12009"));
             return false;
         }
         if (player.isInStoreMode()) {
-            player.sendMessage("Você não pode usar isto no momento");
+            player.sendMessage(getLocalizedString(player, "12010"));
             return false;
         }
         if (player.isInObserverMode()) {
-            player.sendMessage("Você não pode usar isto no momento");
+            player.sendMessage(getLocalizedString(player, "12011"));
             return false;
         }
         if (player.getCast().isCastingNow()){
-            player.sendMessage("Você não pode usar isto no momento");
+            player.sendMessage(getLocalizedString(player, "12012"));
             return false;
         }
+        
+        // Verificações de eventos
+        if (player.isInTournament()) {
+            player.sendMessage(getLocalizedString(player, "12035"));
+            return false;
+        }
+        
+        // Verificações de eventos CTF, TVT, DM, LM
+        // Nota: Estes métodos podem não existir em todas as versões do servidor
+        // Se não existirem, as verificações serão ignoradas silenciosamente
+        try {
+            if ((Boolean) player.getClass().getMethod("isInCTF").invoke(player)) {
+                player.sendMessage(getLocalizedString(player, "12036"));
+                return false;
+            }
+        } catch (Exception e) {
+            // Método não existe, continua
+        }
+        
+        try {
+            if ((Boolean) player.getClass().getMethod("isInTvT").invoke(player)) {
+                player.sendMessage(getLocalizedString(player, "12037"));
+                return false;
+            }
+        } catch (Exception e) {
+            // Método não existe, continua
+        }
+        
+        try {
+            if ((Boolean) player.getClass().getMethod("isInDM").invoke(player)) {
+                player.sendMessage(getLocalizedString(player, "12038"));
+                return false;
+            }
+        } catch (Exception e) {
+            // Método não existe, continua
+        }
+        
+        try {
+            if ((Boolean) player.getClass().getMethod("isInLM").invoke(player)) {
+                player.sendMessage(getLocalizedString(player, "12039"));
+                return false;
+            }
+        } catch (Exception e) {
+            // Método não existe, continua
+        }
+        
         if (!allowRepeat.get()) {
             List<Long> entryTimes = _playerEntryTimes.getOrDefault(player.getObjectId(), new ArrayList<>());
             
@@ -589,7 +663,7 @@ private void modifyDungeonSpawns() {
         if (participants == null || participants.isEmpty()) {
             
             participants = Collections.singletonList(player);
-            player.sendMessage("Erro ao coletar participantes.");
+                player.sendMessage(getLocalizedString(player, "12022"));
             //return;
         }
         
@@ -598,9 +672,9 @@ private void modifyDungeonSpawns() {
         if (skillUsed != null) {
             for (Player member : participants) {
                 if (member.getCast().getCurrentSkill().getId() != Config.CHANNELING_SKILL_ID) {
-                    String message = "Sua entrada foi cancelada porque a preparação foi interrompida.";
+                    String message = getLocalizedString(member, "12017");
                     if (!isSolo) {
-                        message = "A preparação de " + member.getName() + " foi interrompida.";
+                        message = getLocalizedString(member, "12018").replace("{name}", member.getName());
                         participants.forEach(p -> {
                             p.abortAll(true);
                         return;
@@ -626,7 +700,7 @@ private void modifyDungeonSpawns() {
             dungeonId = getSoloDungeonIdForLevel(player.getStatus().getLevel());
             
             if (dungeonId == -1) {
-                player.sendMessage("Seu nível não é compatível para entrar no Hall of the Abyss.");
+                player.sendMessage(getLocalizedString(player, "12019"));
                 return;
             }
             //participants = Collections.singletonList(player);
@@ -640,7 +714,7 @@ private void modifyDungeonSpawns() {
             
             dungeonId = getPartyDungeonIdForLevel(maxLevel);
             if (dungeonId == -1) {
-                player.getParty().broadcastToPartyMembers(player, new CreatureSay(0, SayType.PARTY, "Nível incompatível", "O nível do membro mais alto da party não é compatível para entrar no Labyrinth of the Abyss."));
+                player.getParty().broadcastToPartyMembers(player, new CreatureSay(0, SayType.PARTY, "Nível incompatível", getLocalizedString(player, "12020")));
                 return;
             }
         }
@@ -649,7 +723,7 @@ private void modifyDungeonSpawns() {
 
         if (template == null) {
             LOGGER.warn("[" + getName() + "] Tentativa de entrar na dungeon com ID " + dungeonId + ", mas o template não foi encontrado no XML.");
-            player.sendMessage("A configuração para esta dungeon não foi encontrada. Contate um administrador.");
+            player.sendMessage(getLocalizedString(player, "12021"));
             return;
         }
 
@@ -698,26 +772,26 @@ private void modifyDungeonSpawns() {
             // Converte para o nosso tipo de dungeon
             KamalokaDungeon kamaloka = (KamalokaDungeon) dungeon;
             // Chama o método de cancelamento que fará toda a limpeza e teleportará todos os jogadores para fora.
-            kamaloka.cancelDungeon("A instância foi encerrada por um jogador.");
+            kamaloka.cancelDungeon(getLocalizedString(player, "12025"));
             player.setIsImmobilized(false);
-            teleportPlayer(player, Config.TELEPORT_EXIT_LOC, "Voce saiu de Kamaloka.", 1);
+            teleportPlayer(player, Config.TELEPORT_EXIT_LOC, getLocalizedString(player, "12024").replace("{dungeon}", "Kamaloka"), 1);
             player.setDungeon((Dungeon)null);
             player.setInstanceMap(InstanceManager.getInstance().getInstance(0), true);
             player.broadcastCharInfo();
             player.broadcastUserInfo();
         } else {
-            player.sendMessage("Você não está em Kamaloka.");
+            player.sendMessage(getLocalizedString(player, "12023"));
         }
     }
 
     private void handleToggleRepeat(Player player) {
         if (!player.isGM()) {
-            player.sendMessage("Você não tem permissão para usar este comando.");
+            player.sendMessage(getLocalizedString(player, "12026"));
             return;
         }
         boolean newState = allowRepeat.compareAndSet(allowRepeat.get(), !allowRepeat.get());
-        String status = newState ? "habilitada" : "restrita a uma vez por dia";
-        player.sendMessage("A reentrada em Kamaloka agora está " + status + ".");
+        String status = newState ? getLocalizedString(player, "12028") : getLocalizedString(player, "12029");
+        player.sendMessage(getLocalizedString(player, "12027").replace("{status}", status));
     }
 
     /*
@@ -741,7 +815,7 @@ private void modifyDungeonSpawns() {
     public void onDungeonFinish(KamalokaDungeon dungeon) {
         _dungeons.remove(dungeon.getInstanceId());
         nextInstanceAnnounceTask.set(_executor.schedule(() ->
-            dungeon.broadcastToDungeon("Tempo restante para derrotar o chefe: " + INSTANCE_COOLDOWN_MINUTES + " minuto(s)."),
+            dungeon.broadcastToDungeon(getLocalizedString(dungeon.getPlayers().get(0), "12032").replace("{time}", String.valueOf(INSTANCE_COOLDOWN_MINUTES))),
             
             INSTANCE_COOLDOWN_MINUTES, TimeUnit.MINUTES));
     }
@@ -764,7 +838,7 @@ private void modifyDungeonSpawns() {
             player.sendPacket(html);
         } catch (IOException e) {
             LOGGER.warn("[" + getName() + "] Falha ao carregar o arquivo HTML: " + fileName, e);
-            player.sendMessage("Erro: não foi possível carregar a janela de diálogo.");
+            player.sendMessage(getLocalizedString(player, "12034"));
         }
     }
 
@@ -798,7 +872,7 @@ private void modifyDungeonSpawns() {
         }
 
         public void onBossKill(Player killer) {
-            broadcastToDungeon("O chefe de Kamaloka foi derrotado por " + killer.getName() + "!");
+            broadcastToDungeon(getLocalizedString(killer, "12030").replace("{name}", killer.getName()));
 
             Party party = killer.getParty();
             if (party != null) {
@@ -826,13 +900,13 @@ private void modifyDungeonSpawns() {
         
         private void cleanupDungeon(boolean failed) {
             if (failed) {
-                broadcastToDungeon("A incursão em " + _dungeonName + " falhou.");
+                broadcastToDungeon(getLocalizedString(getPlayers().get(0), "12031").replace("{dungeon}", _dungeonName));
                 cancelDungeon();
             }
 
             getPlayers().forEach(p -> {
                 if (p != null && p.isOnline()) {
-                    KamalokaInstancia.getInstance().teleportPlayer(p, Config.TELEPORT_EXIT_LOC, "Voce foi retornado de " + _dungeonName + ".", 1);
+                    KamalokaInstancia.getInstance().teleportPlayer(p, Config.TELEPORT_EXIT_LOC, getLocalizedString(p, "12024").replace("{dungeon}", _dungeonName), 1);
                     p.setDungeon(null);
                     p.setInstanceMap(null, true);
                     p.setIsImmobilized(false);
