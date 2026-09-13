@@ -32,29 +32,31 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.TimeZone;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 import java.lang.reflect.Field;
+import br.project.spi.Extension;
+import br.project.spi.ExtensionContext;
 
 /**
  * Mod Kamaloka Instancia.
  *
- * Compatível com o ambiente compilado em server.jar.
+ * Compatível com o ambiente compilado em server.jar e BrProject-2026.
+ * Implementa tanto L2JExtension (legado) quanto br.project.spi.Extension (Phase 2 SPI).
  * Refatorado para maior integração com o sistema de Dungeon.
  *
  * @author Dhousefe
- * @version 4.2
+ * @version 4.3
  */
-public final class KamalokaInstancia implements L2JExtension, OnBypassCommandListener {
+public final class KamalokaInstancia implements L2JExtension, Extension, OnBypassCommandListener {
     private static final CLogger LOGGER = new CLogger(KamalokaInstancia.class.getName());
 
     // --- Configurações ---
@@ -64,6 +66,14 @@ public final class KamalokaInstancia implements L2JExtension, OnBypassCommandLis
     // --- Configurações da Instância ---
     private static final int INSTANCE_COOLDOWN_MINUTES = 320;
     private static final int PARTY_RANGE_TO_REWARD = 1500;
+
+    // --- SPI Metadata (BrProject-2026) ---
+    public static final String SPI_ID = "kamaloka-instance";
+    public static final String SPI_VERSION = "4.3.0";
+
+    // --- Otimização de Cálculo de Data (Zero Allocation) ---
+    private static final long TIME_ZONE_OFFSET_MS = TimeZone.getDefault().getRawOffset();
+    private static final long MILLIS_PER_DAY = 86_400_000L;
 
     // --- Estado do Manager ---
     private static final AtomicBoolean allowRepeat = new AtomicBoolean(false);
@@ -96,11 +106,15 @@ public final class KamalokaInstancia implements L2JExtension, OnBypassCommandLis
         public OriginalStats(NpcTemplate template) {
             byte tempLevel = 0;
             try {
-                Field levelField = NpcTemplate.class.getDeclaredField("_level");
-                levelField.setAccessible(true);
-                tempLevel = levelField.getByte(template);
-            } catch (NoSuchFieldException | IllegalAccessException e) {
-                LOGGER.error("Nao foi possivel acessar o campo _level via reflection.", e);
+                tempLevel = template.getLevel();
+            } catch (Throwable t) {
+                try {
+                    Field levelField = NpcTemplate.class.getDeclaredField("_level");
+                    levelField.setAccessible(true);
+                    tempLevel = levelField.getByte(template);
+                } catch (NoSuchFieldException | IllegalAccessException e) {
+                    LOGGER.error("Nao foi possivel acessar o campo _level.", e);
+                }
             }
             this.level = tempLevel;
             this.baseHpMax = template._baseHpMax;
@@ -239,6 +253,40 @@ public final class KamalokaInstancia implements L2JExtension, OnBypassCommandLis
     @Override
     public String getName() {
         return INSTANCE_NAME;
+    }
+
+    // --- Implementação do Contrato Extension SPI (BrProject-2026 Phase 2) ---
+    @Override
+    public String id() {
+        return SPI_ID;
+    }
+
+    @Override
+    public String version() {
+        return SPI_VERSION;
+    }
+
+    @Override
+    public void onLoad(ExtensionContext context) {
+        onLoad();
+        if (context != null) {
+            context.info("[" + id() + " v" + version() + "] Inicializado via Extension SPI.");
+        }
+    }
+
+    @Override
+    public void onEnable(ExtensionContext context) {
+        if (context != null) {
+            context.info("[" + id() + "] Ativado com sucesso no contexto do BrProject-2026.");
+        }
+    }
+
+    @Override
+    public void onDisable(ExtensionContext context) {
+        onDisable();
+        if (context != null) {
+            context.info("[" + id() + "] Desativado via Extension SPI.");
+        }
     }
 
 
@@ -637,23 +685,23 @@ private void modifyDungeonSpawns() {
         }
         
         if (!allowRepeat.get()) {
-            List<Long> entryTimes = _playerEntryTimes.getOrDefault(player.getObjectId(), new ArrayList<>());
-            
-            // Filtra para manter apenas as entradas de hoje
-            List<Long> todayEntries = entryTimes.stream()
-                .filter(this::isToday)
-                .collect(Collectors.toList());
+            List<Long> entryTimes = _playerEntryTimes.get(player.getObjectId());
+            if (entryTimes != null && !entryTimes.isEmpty()) {
+                int todayCount = 0;
+                long now = System.currentTimeMillis();
+                long dayNow = (now + TIME_ZONE_OFFSET_MS) / MILLIS_PER_DAY;
+                for (int i = 0; i < entryTimes.size(); i++) {
+                    long ts = entryTimes.get(i);
+                    if (ts != 0 && ((ts + TIME_ZONE_OFFSET_MS) / MILLIS_PER_DAY) == dayNow) {
+                        todayCount++;
+                    }
+                }
 
-            if (todayEntries.size() > Config.MAX_DAILY_ENTRIES) { 
-                showHtml(player, "322-daily-limit.htm");
-                return false;
+                if (todayCount >= Config.MAX_DAILY_ENTRIES) {
+                    showHtml(player, "322-daily-limit.htm");
+                    return false;
+                }
             }
-            
-            // Adiciona a entrada atual a lista antes de salvar
-            todayEntries.add(System.currentTimeMillis());
-            
-            // Atualiza a lista de entradas
-            _playerEntryTimes.put(player.getObjectId(), todayEntries);
         }
         return true;
     }
@@ -760,27 +808,33 @@ private void modifyDungeonSpawns() {
 
     private boolean isToday(long timestamp) {
         if (timestamp == 0) return false;
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-        return sdf.format(new Date(timestamp)).equals(sdf.format(new Date()));
+        long now = System.currentTimeMillis();
+        long dayTimestamp = (timestamp + TIME_ZONE_OFFSET_MS) / MILLIS_PER_DAY;
+        long dayNow = (now + TIME_ZONE_OFFSET_MS) / MILLIS_PER_DAY;
+        return dayTimestamp == dayNow;
     }
 
 
 
     private void handleLeaveInstance(Player player) {
         Dungeon dungeon = player.getDungeon();
-        if (dungeon instanceof KamalokaDungeon) {
-            // Converte para o nosso tipo de dungeon
-            KamalokaDungeon kamaloka = (KamalokaDungeon) dungeon;
-            // Chama o método de cancelamento que fará toda a limpeza e teleportará todos os jogadores para fora.
+        if (dungeon instanceof KamalokaDungeon kamaloka) {
             kamaloka.cancelDungeon(getLocalizedString(player, "12025"));
-            player.setIsImmobilized(false);
-            teleportPlayer(player, Config.TELEPORT_EXIT_LOC, getLocalizedString(player, "12024").replace("{dungeon}", "Kamaloka"), 1);
-            player.setDungeon((Dungeon)null);
-            player.setInstanceMap(InstanceManager.getInstance().getInstance(0), true);
-            player.broadcastCharInfo();
-            player.broadcastUserInfo();
         } else {
-            player.sendMessage(getLocalizedString(player, "12023"));
+            // Saída de emergência / fallback se player perdeu a referência da dungeon (ex: após morte/relog) mas está dentro de uma instância
+            int instId = (player.getInstanceMap() != null) ? player.getInstanceMap().getId() : 0;
+            if (instId > 0) {
+                LOGGER.info("[" + getName() + "] Jogador " + player.getName() + " saindo via fallback de instância (instanceId=" + instId + ").");
+                player.setIsImmobilized(false);
+                player.setDungeon((Dungeon) null);
+                player.setInstanceMap(InstanceManager.getInstance().getInstance(0), true);
+                player.teleToLocation(Config.TELEPORT_EXIT_LOC);
+                player.sendMessage(getLocalizedString(player, "12024").replace("{dungeon}", "Kamaloka"));
+                player.broadcastCharInfo();
+                player.broadcastUserInfo();
+            } else {
+                player.sendMessage(getLocalizedString(player, "12023"));
+            }
         }
     }
 
@@ -814,10 +868,13 @@ private void modifyDungeonSpawns() {
 
     public void onDungeonFinish(KamalokaDungeon dungeon) {
         _dungeons.remove(dungeon.getInstanceId());
-        nextInstanceAnnounceTask.set(_executor.schedule(() ->
-            dungeon.broadcastToDungeon(getLocalizedString(dungeon.getPlayers().get(0), "12032").replace("{time}", String.valueOf(INSTANCE_COOLDOWN_MINUTES))),
-            
-            INSTANCE_COOLDOWN_MINUTES, TimeUnit.MINUTES));
+        List<Player> players = dungeon.getPlayers();
+        Player refPlayer = (players != null && !players.isEmpty()) ? players.get(0) : null;
+        if (refPlayer != null) {
+            nextInstanceAnnounceTask.set(_executor.schedule(() ->
+                dungeon.broadcastToDungeon(getLocalizedString(refPlayer, "12032").replace("{time}", String.valueOf(INSTANCE_COOLDOWN_MINUTES))),
+                INSTANCE_COOLDOWN_MINUTES, TimeUnit.MINUTES));
+        }
     }
 
     private void teleportPlayer(Player player, Location loc, String message, long delayMs) {
@@ -864,6 +921,7 @@ private void modifyDungeonSpawns() {
         //private final MapInstance _instance;
         private final int _instanceId = INSTANCE_NAME.hashCode() ^ System.identityHashCode(this);
         private final String _dungeonName;
+        private final AtomicBoolean _isCleaningUp = new AtomicBoolean(false);
         
         public KamalokaDungeon(DungeonTemplate template, List<Player> players) {
             super(template, players); // Agora usa o template carregado do XML
@@ -899,26 +957,47 @@ private void modifyDungeonSpawns() {
 
         
         private void cleanupDungeon(boolean failed) {
-            if (failed) {
-                broadcastToDungeon(getLocalizedString(getPlayers().get(0), "12031").replace("{dungeon}", _dungeonName));
-                cancelDungeon();
+            if (!_isCleaningUp.compareAndSet(false, true)) {
+                return;
             }
 
-            getPlayers().forEach(p -> {
-                if (p != null && p.isOnline()) {
-                    KamalokaInstancia.getInstance().teleportPlayer(p, Config.TELEPORT_EXIT_LOC, getLocalizedString(p, "12024").replace("{dungeon}", _dungeonName), 1);
-                    p.setDungeon(null);
-                    p.setInstanceMap(null, true);
-                    p.setIsImmobilized(false);
+            List<Player> participants = getPlayers();
+            if (failed) {
+                if (participants != null && !participants.isEmpty()) {
+                    Player firstPlayer = participants.get(0);
+                    if (firstPlayer != null) {
+                        broadcastToDungeon(getLocalizedString(firstPlayer, "12031").replace("{dungeon}", _dungeonName));
+                    }
                 }
-            });
+            }
 
+            if (participants != null) {
+                for (Player p : participants) {
+                    if (p != null && p.isOnline()) {
+                        p.setIsImmobilized(false);
+                        p.setDungeon(null);
+                        p.setInstanceMap(InstanceManager.getInstance().getInstance(0), true);
+                        p.teleToLocation(Config.TELEPORT_EXIT_LOC);
+                        p.sendMessage(getLocalizedString(p, "12024").replace("{dungeon}", _dungeonName));
+                        p.broadcastCharInfo();
+                        p.broadcastUserInfo();
+                    }
+                }
+            }
 
-            DungeonManager.getInstance().removeDungeon(this);
+            try {
+                DungeonManager.getInstance().removeDungeon(this);
+            } catch (Exception e) {
+                LOGGER.warn("[" + getName() + "] Erro ao remover dungeon do DungeonManager: " + e.getMessage());
+            }
+
+            try {
+                cancelDungeon(); // Limpa tarefas internas da superclasse Dungeon
+            } catch (Exception e) {
+                LOGGER.warn("[" + getName() + "] Erro ao chamar super.cancelDungeon: " + e.getMessage());
+            }
+
             KamalokaInstancia.getInstance().onDungeonFinish(this);
-
-            cancelDungeon();
-            
         }
 
 
@@ -927,11 +1006,13 @@ private void modifyDungeonSpawns() {
         }
 
         public void broadcastToDungeon(String message) {
-            getPlayers().forEach(p -> {
+            List<Player> players = getPlayers();
+            if (players == null || players.isEmpty()) return;
+            for (Player p : players) {
                 if (p != null && p.isOnline()) {
                     p.sendPacket(new CreatureSay(0, SayType.TELL, "Kamaloka", message));
                 }
-            });
+            }
         }
 
         
