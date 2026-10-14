@@ -442,4 +442,9 @@
 	<string key="12038">You cannot enter while registered in Deathmatch event.</string>
 	<string key="12039">You cannot enter while registered in Last Man event.</string>
 	<string key="12040">You are in a safe zone, teleporting directly to the instance.</string>
+	<string key="12041">You must leave your party to enter Kamaloka Solo.</string>
+	<string key="12042">Only the party leader can request entry to the instance.</string>
+	<string key="12043">{name} is too far away to enter the instance.</string>
+	<string key="12044">You do not have enough required items to enter the instance.</string>
+	<string key="12045">Party member {name} does not have enough required items to enter.</string>
 </list>
